@@ -1,0 +1,1103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#202124" media="(prefers-color-scheme: dark)" />
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <title>Loan Tracker</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #ffffff;
+      --surface: #ffffff;
+      --surface2: #f8f9fa;
+      --text: #202124;
+      --dim: #5f6368;
+      --border: #e8eaed;
+      --accent: #1a73e8;
+      --accent-soft: #e8f0fe;
+      --green: #188038;
+      --green-dark: #137333;
+      --green-soft: #e6f4ea;
+      --live-green: #22c55e;
+      --red: #d93025;
+      --red-soft: #fce8e6;
+      --amber: #b06000;
+      --amber-soft: #fef7e0;
+      --blue: #1a73e8;
+      --blue-soft: #e8f0fe;
+      --radius: 24px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #202124;
+        --surface: #202124;
+        --surface2: #2d2e30;
+        --text: #e8eaed;
+        --dim: #9aa0a6;
+        --border: #3c4043;
+        --accent: #8ab4f8;
+        --accent-soft: #303f5c;
+        --green: #81c995;
+        --green-dark: #81c995;
+        --green-soft: #1e3329;
+        --red: #f28b82;
+        --red-soft: #3d2421;
+        --amber: #fdd663;
+        --amber-soft: #332b10;
+        --blue: #8ab4f8;
+        --blue-soft: #303f5c;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Roboto, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.45;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .tnum { font-variant-numeric: tabular-nums; }
+    .page { width: min(672px, 100%); margin: 0 auto; padding: 32px 20px 96px; }
+
+    .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 9999px; background: var(--live-green); animation: livePulse 1.1s ease-in-out infinite; flex-shrink: 0; }
+    @keyframes livePulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.45); opacity: .5; } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes tickIn { 0% { transform: scale(.7); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+    .tick-anim { animation: tickIn .22s ease both; }
+
+    /* ---------- Hero ---------- */
+    .hero { text-align: center; }
+    .hero-label { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; font-size: 14px; color: var(--dim); }
+    .live-pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; background: var(--green-soft); padding: 2px 8px; font-size: 11px; font-weight: 700; letter-spacing: .04em; color: var(--green-dark); }
+    .hero-total { margin: 4px 0 0; font-size: 42px; font-weight: 400; line-height: 1.15; letter-spacing: -.01em; }
+    .hero-total .frac, .big-value .frac { font-size: .52em; opacity: .75; }
+    .hero-per { margin: 2px 0 0; font-size: 14px; font-weight: 500; color: var(--green-dark); }
+    .hero-sub { margin: 2px 0 0; font-size: 14px; color: var(--dim); }
+
+    /* ---------- Live byaaj panel ---------- */
+    .panel-live { margin-top: 20px; border-radius: var(--radius); background: var(--surface2); padding: 16px; }
+    .panel-head { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 13px; font-weight: 700; color: var(--green-dark); }
+    .rate-label { margin: 12px 0 0; text-align: center; font-size: 13px; font-weight: 500; color: var(--dim); }
+    .big-rate { margin: 2px 0 0; text-align: center; font-size: 36px; font-weight: 500; line-height: 1.2; }
+    .big-rate .per { font-size: 15px; font-weight: 400; color: var(--dim); }
+    .rate-boxes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; text-align: center; }
+    .rate-box { border-radius: 16px; background: var(--surface); padding: 10px 8px; }
+    .rate-box span { display: block; font-size: 11px; color: var(--dim); }
+    .rate-box strong { display: block; margin-top: 2px; font-size: 15px; font-weight: 500; }
+    .session-line { margin: 12px 0 0; text-align: center; font-size: 13px; color: var(--dim); }
+    .session-line strong { font-weight: 500; color: var(--text); }
+    .divider { height: 1px; width: 80%; margin: 12px auto; background: var(--border); }
+    .perloan-label { margin: 0; font-size: 12px; font-weight: 500; color: var(--dim); }
+    .perloan-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 6px; font-size: 13px; }
+    .perloan-row .who { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .perloan-row .who span { color: var(--dim); }
+    .perloan-row .val { flex-shrink: 0; font-weight: 500; color: var(--green-dark); }
+
+    /* ---------- Amber byaaj panel ---------- */
+    .panel-amber { margin-top: 24px; border-radius: var(--radius); background: var(--amber-soft); padding: 16px; text-align: center; }
+    .panel-amber .panel-head { justify-content: center; font-weight: 500; color: var(--amber); }
+    .big-value { margin: 2px 0 0; font-size: 36px; font-weight: 500; line-height: 1.2; }
+    .panel-amber .sub { margin: 2px 0 0; font-size: 13px; color: var(--dim); }
+
+    /* ---------- Stat tiles ---------- */
+    .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 28px; }
+    .tile { border-radius: var(--radius); padding: 16px; }
+    .tile p { margin: 0; }
+    .tile .t-label { font-size: 13px; font-weight: 500; }
+    .tile .t-value { margin-top: 4px; font-size: 22px; font-weight: 500; line-height: 1.1; }
+    .tile .t-value .unit { font-size: 13px; color: var(--dim); }
+    .tile .t-sub { margin-top: 6px; font-size: 12px; color: var(--dim); }
+    .tile.red { background: var(--red-soft); } .tile.red .t-label { color: var(--red); }
+    .tile.amber { background: var(--amber-soft); } .tile.amber .t-label { color: var(--amber); }
+    .tile.green { background: var(--green-soft); } .tile.green .t-label { color: var(--green); }
+    .tile.blue { background: var(--blue-soft); } .tile.blue .t-label { color: var(--blue); }
+
+    /* ---------- Sections ---------- */
+    .section { margin-top: 36px; }
+    .sec-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .sec-head h2 { margin: 0; font-size: 18px; font-weight: 500; }
+    .sec-sub { margin: 4px 0 0; font-size: 13px; color: var(--dim); }
+    .month-nav { display: flex; align-items: center; gap: 4px; }
+    .nav-btn { display: flex; width: 40px; height: 40px; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: transparent; font-size: 20px; color: var(--dim); }
+    .nav-btn:active { background: var(--surface2); }
+    .month-label { min-width: 132px; text-align: center; font-size: 15px; font-weight: 500; margin: 0; }
+
+    /* ---------- Calendar ---------- */
+    .cal-note { margin: 8px 0 0; font-size: 13px; color: var(--dim); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-top: 12px; }
+    .cal-wd { padding: 4px 0; text-align: center; font-size: 11px; color: var(--dim); }
+    .day { border: 0; border-radius: 12px; background: transparent; color: var(--text); padding: 6px 1px 5px; display: flex; flex-direction: column; align-items: center; gap: 1px; min-height: 52px; }
+    .day .dnum { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font-size: 14px; }
+    .day.today .dnum { background: var(--accent); color: #fff; font-weight: 500; }
+    @media (prefers-color-scheme: dark) { .day.today .dnum { color: #202124; } }
+    .day.selected { background: var(--accent-soft); }
+    .day .damt { font-size: 10px; font-weight: 500; color: var(--green-dark); line-height: 1.1; }
+    .day .dcheck { font-size: 9px; color: var(--green); line-height: 1; }
+    .day-detail { margin-top: 14px; }
+    .day-detail-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+    .day-detail-head strong { font-size: 15px; font-weight: 500; }
+    .day-detail-head span { font-size: 13px; color: var(--dim); }
+    .pay-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .pay-item:last-of-type { border-bottom: 0; }
+    .pay-item .who { min-width: 0; }
+    .pay-item .who strong { display: block; font-size: 14px; font-weight: 500; }
+    .pay-item .who span { display: block; font-size: 12px; color: var(--dim); }
+    .pay-item .amt { margin-left: auto; font-size: 14px; font-weight: 500; white-space: nowrap; }
+    .icon-btn { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; border: 0; background: transparent; color: var(--dim); display: grid; place-items: center; font-size: 15px; }
+    .icon-btn:active { background: var(--surface2); }
+    .add-day-btn { width: 100%; margin-top: 10px; border: 0; border-radius: 999px; background: var(--accent-soft); color: var(--accent); padding: 11px; font-size: 14px; font-weight: 500; }
+    .month-total-line { margin: 12px 0 0; text-align: center; font-size: 13px; color: var(--dim); }
+    .none-note { margin: 10px 0 0; font-size: 13px; color: var(--dim); }
+
+    /* ---------- Forms ---------- */
+    .form-panel { margin-top: 12px; border-radius: var(--radius); background: var(--surface2); padding: 16px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; }
+    .form-grid .wide { grid-column: 1 / -1; }
+    .field label { display: block; margin-bottom: 6px; font-size: 11px; font-weight: 500; letter-spacing: .03em; text-transform: uppercase; color: var(--dim); }
+    .field input, .field select {
+      width: 100%; border: 1px solid var(--border); border-radius: 12px;
+      background: var(--surface); color: var(--text); padding: 10px 12px; outline: none;
+    }
+    .field input:focus, .field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .btn-primary { border: 0; border-radius: 999px; background: var(--accent); color: #fff; padding: 11px 18px; font-size: 14px; font-weight: 500; white-space: nowrap; }
+    @media (prefers-color-scheme: dark) { .btn-primary { color: #202124; } }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-danger { border: 1px solid var(--border); border-radius: 999px; background: transparent; color: var(--red); padding: 8px 14px; font-size: 13px; font-weight: 500; }
+    .btn-danger.armed { background: var(--red); border-color: var(--red); color: #fff; }
+    .form-error { display: none; margin: 10px 0 0; font-size: 13px; font-weight: 500; color: var(--red); }
+    .form-note { margin: 10px 0 0; font-size: 12px; color: var(--dim); }
+
+    /* ---------- Tick list ---------- */
+    .tick-summary { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .tick-count { font-size: 14px; font-weight: 500; margin-right: 4px; }
+    .chip { border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 700; }
+    .chip.diya { background: var(--green-soft); color: var(--green-dark); }
+    .chip.baki { background: var(--red-soft); color: var(--red); }
+    .tick-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .tick-row:last-child { border-bottom: 0; }
+    .avatar { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 16px; font-weight: 500; }
+    .tick-row .who { min-width: 0; }
+    .tick-row .who strong { display: block; font-size: 14px; font-weight: 500; }
+    .tick-row .who span { display: block; font-size: 12px; color: var(--dim); }
+    .tick-row.done .who span { color: var(--green-dark); }
+    .tick-row .amt { margin-left: auto; font-size: 15px; font-weight: 500; white-space: nowrap; }
+    .tick-btn { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--border); background: transparent; color: var(--dim); font-size: 16px; display: grid; place-items: center; }
+    .tick-btn.done { background: var(--green); border-color: var(--green); color: #fff; }
+
+    /* ---------- Monthly list ---------- */
+    .month-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .month-row:last-child { border-bottom: 0; }
+    .month-row strong { display: block; font-size: 15px; font-weight: 500; }
+    .month-row span { display: block; font-size: 12px; color: var(--dim); margin-top: 1px; }
+    .month-row b { font-size: 17px; font-weight: 500; white-space: nowrap; }
+
+    /* ---------- Saare karz ---------- */
+    .add-loan-btn { border: 0; border-radius: 999px; background: var(--accent-soft); color: var(--accent); padding: 9px 16px; font-size: 13px; font-weight: 500; white-space: nowrap; }
+    .loan-row-head { width: 100%; display: flex; align-items: center; gap: 12px; padding: 14px 0; border: 0; border-bottom: 1px solid var(--border); background: transparent; color: var(--text); text-align: left; }
+    .loan-main { flex: 1; min-width: 0; }
+    .loan-main strong { display: block; font-size: 15px; font-weight: 500; }
+    .loan-main span { display: block; font-size: 12.5px; color: var(--dim); margin-top: 1px; }
+    .loan-main .live-line { color: var(--green-dark); font-weight: 500; }
+    .loan-right { text-align: right; flex: 0 0 auto; }
+    .loan-right strong { display: block; font-size: 19px; font-weight: 500; white-space: nowrap; }
+    .loan-right span { display: block; font-size: 12px; color: var(--dim); margin-top: 1px; }
+    .loan-detail { padding: 2px 0 16px 52px; border-bottom: 1px solid var(--border); }
+    .tranche-block { border-radius: 16px; background: var(--surface2); padding: 14px; margin-bottom: 10px; }
+    .tranche-block:last-child { margin-bottom: 0; }
+    .tranche-title { margin: 0 0 8px; font-size: 13px; font-weight: 500; color: var(--dim); }
+    .amount-line { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 5px 0; font-size: 13px; }
+    .amount-line span { color: var(--dim); }
+    .amount-line strong { font-weight: 500; white-space: nowrap; }
+    .amount-line.hl strong { color: var(--red); }
+    .amount-line.ok strong { color: var(--green-dark); }
+    .progress-track { height: 6px; margin-top: 10px; border-radius: 99px; background: var(--border); overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 99px; background: var(--accent); transition: width .4s ease; }
+    .progress-copy { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; font-size: 11.5px; color: var(--dim); }
+    .progress-copy b { color: var(--accent); }
+    .pay-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; margin-top: 12px; }
+    .pay-form .btn-primary { grid-column: 1 / -1; }
+    .pay-history { margin-top: 12px; }
+    .pay-history h3 { margin: 0 0 4px; font-size: 11px; font-weight: 500; letter-spacing: .03em; text-transform: uppercase; color: var(--dim); }
+    .hist-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px dashed var(--border); font-size: 13px; }
+    .hist-row:last-child { border-bottom: 0; }
+    .hist-row .split { display: block; font-size: 11.5px; color: var(--dim); }
+    .hist-row .hamt { display: flex; align-items: center; gap: 6px; font-weight: 500; color: var(--green-dark); white-space: nowrap; }
+    .card-actions { display: flex; justify-content: flex-end; margin-top: 10px; }
+    .emi-badge { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; border-radius: 999px; background: var(--green-soft); color: var(--green-dark); padding: 5px 11px; font-size: 12.5px; font-weight: 500; }
+    .empty-state { padding: 22px 0; text-align: center; color: var(--dim); font-size: 14px; }
+
+    .footer-tip { margin: 36px 0 0; font-size: 13px; color: var(--dim); }
+
+    @media (max-width: 520px) {
+      .page { padding: 24px 16px 72px; }
+      .hero-total { font-size: 37px; }
+      .big-rate, .big-value { font-size: 32px; }
+      .loan-detail { padding-left: 0; }
+      .month-label { min-width: 118px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .live-dot, .tick-anim { animation: none; }
+      .progress-fill { transition: none; }
+      .btn-primary:active { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+
+    <!-- Hero -->
+    <section class="hero" aria-label="Kul baki karz — live">
+      <p class="hero-label">Kul baki — interest mila ke total
+        <span class="live-pill"><span class="live-dot" aria-hidden="true"></span>LIVE</span>
+      </p>
+      <h1 class="hero-total tnum" id="grandTotal">₹0</h1>
+      <p class="hero-per tnum" id="heroPer">Har second +₹0.0000 badh raha hai</p>
+      <p class="hero-sub tnum" id="heroSub">Principal ₹0 + byaaj ₹0 · 0 karz chal rahe hain</p>
+    </section>
+
+    <!-- Live byaaj -->
+    <section class="panel-live" aria-label="Live byaaj — har second kitna badh raha hai">
+      <p class="panel-head"><span class="live-dot" aria-hidden="true"></span>LIVE — byaaj abhi, isi pal badh raha hai</p>
+      <p class="rate-label">Har second itna badh raha hai</p>
+      <p class="big-rate tnum"><span id="rateSecondBig">+₹0.0000</span><span class="per"> /second</span></p>
+      <div class="rate-boxes tnum">
+        <div class="rate-box"><span>Har minute</span><strong id="rateMinute">+₹0.00</strong></div>
+        <div class="rate-box"><span>Har ghanta</span><strong id="rateHour">+₹0.00</strong></div>
+        <div class="rate-box"><span>Har din</span><strong id="rateDay">+₹0.00</strong></div>
+      </div>
+      <p class="session-line tnum">Page khulne ke baad ab tak <strong id="sessionGain">+₹0.0000</strong> aur badh gaya</p>
+      <div class="divider" aria-hidden="true"></div>
+      <p class="perloan-label">Kis karz ka kitna — har second</p>
+      <div id="perLoanList"></div>
+    </section>
+
+    <!-- Ab tak byaaj -->
+    <section class="panel-amber" aria-label="Ab tak byaaj kitna hua — live">
+      <p class="panel-head"><span class="live-dot" aria-hidden="true"></span>Ab tak byaaj — baki (interest mila ke dena hai) · LIVE</p>
+      <p class="big-value tnum" id="interestBig">₹0</p>
+      <p class="sub tnum" id="interestSub">—</p>
+    </section>
+
+    <!-- Hisaab tiles -->
+    <section class="tiles" aria-label="Hisaab ek nazar me">
+      <div class="tile red">
+        <p class="t-label">Kitna pay karna hai — total</p>
+        <p class="t-value tnum" id="tileTotal">—</p>
+        <p class="t-sub tnum" id="tileTotalSub">—</p>
+      </div>
+      <div class="tile amber">
+        <p class="t-label">Byaaj (interest)</p>
+        <p class="t-value tnum"><span id="tileByaj">—</span><span class="unit"> /mahina</span></p>
+        <p class="t-sub tnum" id="tileByajSub">—</p>
+      </div>
+      <div class="tile green">
+        <p class="t-label">Kitna pay kiya</p>
+        <p class="t-value tnum" id="tilePaid">—</p>
+        <p class="t-sub">Saari payments mila kar, ab tak</p>
+      </div>
+      <div class="tile blue">
+        <p class="t-label">Har mahine ka bojh</p>
+        <p class="t-value tnum" id="tileBojh">—</p>
+        <p class="t-sub tnum" id="tileBojhSub">—</p>
+      </div>
+    </section>
+
+    <!-- Calendar -->
+    <section class="section" aria-label="Payment calendar">
+      <div class="sec-head">
+        <h2>Calendar</h2>
+        <div class="month-nav">
+          <button class="nav-btn" type="button" id="calPrev" aria-label="Pichhla mahina">‹</button>
+          <p class="month-label" id="calLabel">—</p>
+          <button class="nav-btn" type="button" id="calNext" aria-label="Agla mahina">›</button>
+        </div>
+      </div>
+      <p class="cal-note">Jis din paisa diya, us din ke neeche rakam dikhegi. Din par tap karke us din ki payment dekhein ya nayi jodein.</p>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="day-detail" id="dayDetail"></div>
+      <p class="month-total-line tnum" id="calMonthTotal"></p>
+    </section>
+
+    <!-- Is Mahine Ki List -->
+    <section class="section" aria-label="Is mahine ki list">
+      <h2 style="margin:0;font-size:18px;font-weight:500;">Is Mahine Ki List</h2>
+      <p class="sec-sub" id="tickSub">—</p>
+      <div class="tick-summary" id="tickSummary"></div>
+      <div id="tickList"></div>
+    </section>
+
+    <!-- Har Mahine Kitna Diya -->
+    <section class="section" aria-label="Har mahine kitna diya">
+      <h2 style="margin:0;font-size:18px;font-weight:500;">Har Mahine Kitna Diya</h2>
+      <div id="monthList"></div>
+      <p class="none-note" id="monthEmpty">No payments recorded yet.</p>
+    </section>
+
+    <!-- Saare Karz -->
+    <section class="section" aria-label="Saare karz">
+      <div class="sec-head">
+        <h2>Saare Karz</h2>
+        <button class="add-loan-btn" type="button" id="toggleLoanForm">+ Naya karz</button>
+      </div>
+      <form class="form-panel" id="loanForm" novalidate hidden>
+        <div class="form-grid">
+          <div class="field wide">
+            <label for="fName">Lender name</label>
+            <input id="fName" type="text" placeholder="e.g. Ramesh" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="fAmount">Amount taken (₹)</label>
+            <input id="fAmount" type="number" inputmode="decimal" min="0" step="any" placeholder="50,000" />
+          </div>
+          <div class="field">
+            <label for="fRate">Interest % / month</label>
+            <input id="fRate" type="number" inputmode="decimal" min="0" step="any" placeholder="3" />
+          </div>
+          <div class="field">
+            <label for="fDate">Date taken</label>
+            <input id="fDate" type="date" />
+          </div>
+          <button class="btn-primary" type="submit" style="width:100%;">Add loan</button>
+        </div>
+        <p class="form-error" id="loanError"></p>
+        <p class="form-note">Interest 0% bhi chalega — bina byaaj wale karz ke liye 0 daalein.</p>
+      </form>
+      <div id="loanList"></div>
+      <div class="empty-state" id="emptyState" hidden>
+        <strong style="display:block;color:var(--text);font-size:15px;margin-bottom:4px;">No loans yet</strong>
+        Upar "+ Naya karz" se pehla karz add karein.
+      </div>
+    </section>
+
+    <p class="footer-tip">Salary ~₹23,000 · pehle tick list clear karo, phir bache paiso se sabse mehenga (zyada byaaj wala) karz ghatao.</p>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var MONTH_SECONDS = 30.4375 * 24 * 60 * 60; // average month
+      var AV_COLORS = ['#1a73e8', '#188038', '#b06000', '#d93025', '#9334e6', '#e37400', '#00838f', '#5f6368'];
+
+      // Manish ke asal karz — hisse alag-alag, jaise liye the.
+      var loans = [
+        { id: 1,  name: 'Jagdeva',           principal: 35000, rate: 3, borrowed: '2025-11-09' },
+        { id: 2,  name: 'Jagdeva',           principal: 25000, rate: 3, borrowed: '2025-11-28' },
+        { id: 3,  name: 'Jagdeva',           principal: 40000, rate: 3, borrowed: '2025-12-16' },
+        { id: 4,  name: 'Shanker',           principal: 30000, rate: 5, borrowed: '2025-11-05' },
+        { id: 5,  name: 'Rajia Madam',       principal: 25000, rate: 5, borrowed: '2025-10-10' },
+        { id: 6,  name: 'Lalo',              principal: 10000, rate: 5, borrowed: '2025-11-01' },
+        { id: 7,  name: 'Rajendra Hardware', principal: 8000,  rate: 0, borrowed: '2026-10-02' },
+        { id: 8,  name: 'Mahatma',           principal: 9000,  rate: 0, borrowed: '2026-10-02' },
+        { id: 9,  name: 'Bala',              principal: 5000,  rate: 0, borrowed: '2026-10-02' },
+        { id: 10, name: 'Light Bill',        principal: 5000,  rate: 0, borrowed: '2026-10-02' },
+        { id: 11, name: 'Poka',              principal: 2000,  rate: 0, borrowed: '2026-10-02' }
+      ];
+      var payments = [
+        // Shanker ka byaaj ₹15,000 dekar clear kiya tha — 4 Sept 2026.
+        { id: 101, loanId: 4, amount: 15000, date: '2026-09-04' },
+        // Jagdeva ko ₹3,000 byaaj November 2026 me diya (2 tarikh ko).
+        { id: 102, loanId: 1, amount: 3000, date: '2026-11-02' }
+      ];
+      // EMI wale karz — dono ki kist har mahine ki 2 tarikh ko jati hai.
+      // basePaid = ab tak di gayi kistein (emiPayments se gin kar milti hain).
+      var emis = [
+        { name: 'Mummy ka Loan', detail: 'Loan ₹60,000 · haath me ₹57,000 mile the', emi: 3230, borrowed: 60000, totalKists: 24, basePaid: 3 },
+        { name: 'Bajaj Finance', detail: 'Kist har mahine ki 2 tarikh ko', emi: 2200, borrowed: 22000, totalKists: 10, basePaid: 5, leftOverride: 10999 }
+      ];
+      var emiPayments = [
+        { name: 'Bajaj Finance', amount: 2200, date: '2026-07-02' },
+        { name: 'Bajaj Finance', amount: 2200, date: '2026-08-02' },
+        { name: 'Mummy ka Loan', amount: 3230, date: '2026-09-02' },
+        { name: 'Bajaj Finance', amount: 2200, date: '2026-09-02' },
+        { name: 'Mummy ka Loan', amount: 3230, date: '2026-10-02' },
+        { name: 'Bajaj Finance', amount: 2200, date: '2026-10-02' },
+        { name: 'Mummy ka Loan', amount: 3230, date: '2026-11-02' },
+        { name: 'Bajaj Finance', amount: 2200, date: '2026-11-02' }
+      ];
+      var seq = 200;
+      var openGroups = {};   // lender name -> detail khula hai ya nahi
+      var calCursor = null;  // calendar ka mahina {y, m}
+      var selectedDate = null;
+      var loadTotal = null;  // page khulne par kul total — session gain ke liye
+
+      var $ = function (id) { return document.getElementById(id); };
+
+      function money(value, decimals) {
+        return new Intl.NumberFormat('en-IN', {
+          style: 'currency', currency: 'INR',
+          minimumFractionDigits: decimals || 0,
+          maximumFractionDigits: decimals || 0
+        }).format(Math.max(0, value || 0));
+      }
+      // Bade number ke liye: integer bada, fraction chhota (original jaisa)
+      function moneyHtml(value) {
+        var s = money(value, 2);
+        var dot = s.lastIndexOf('.');
+        if (dot === -1) return s;
+        return s.slice(0, dot) + '<span class="frac">' + s.slice(dot) + '</span>';
+      }
+      function parseDay(str) {
+        if (!str) return null;
+        var p = str.split('-').map(Number);
+        return new Date(p[0], p[1] - 1, p[2], 0, 0, 0, 0);
+      }
+      function todayStr() {
+        var d = new Date();
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      }
+      function fmtDate(str) {
+        var d = parseDay(str);
+        if (!d) return '—';
+        return new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }).format(d);
+      }
+      function fmtDayShort(str) {
+        var d = parseDay(str);
+        if (!d) return '—';
+        return new Intl.DateTimeFormat('en-IN', { weekday: 'short', day: 'numeric', month: 'short' }).format(d);
+      }
+      function fmtMonth(key) {
+        var p = key.split('-').map(Number);
+        return new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numeric' }).format(new Date(p[0], p[1] - 1, 1));
+      }
+      function avatarColor(name) {
+        var h = 0;
+        for (var i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+        return AV_COLORS[h % AV_COLORS.length];
+      }
+      function avatarHtml(name, size) {
+        var s = size || 40;
+        return '<span class="avatar" style="background:' + avatarColor(name) + ';width:' + s + 'px;height:' + s + 'px;font-size:' + Math.round(s * 0.4) + 'px;">' + name.charAt(0).toUpperCase() + '</span>';
+      }
+      function esc(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      /* ---------- Interest calculation (pehle jaisa hi) ---------- */
+      // Walk a loan's payments in date order, accruing simple interest on the
+      // outstanding principal. Returns the full picture at time `now`.
+      function calcLoan(loan, now) {
+        var start = parseDay(loan.borrowed);
+        var principalLeft = loan.principal;
+        var accrued = 0;
+        var interestPaid = 0;
+        var principalPaid = 0;
+        var last = start.getTime();
+        var monthlyRate = loan.rate / 100;
+
+        var mine = payments.filter(function (p) { return p.loanId === loan.id; })
+          .slice().sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : a.id - b.id; });
+
+        var splits = {};
+        mine.forEach(function (p) {
+          var t = Math.min(parseDay(p.date).getTime(), now.getTime());
+          if (t > last) {
+            accrued += principalLeft * monthlyRate * ((t - last) / 1000) / MONTH_SECONDS;
+            last = t;
+          }
+          var due = Math.max(0, accrued - interestPaid);
+          var toInterest = Math.min(p.amount, due);
+          var toPrincipal = Math.min(p.amount - toInterest, principalLeft);
+          interestPaid += toInterest;
+          principalPaid += toPrincipal;
+          principalLeft -= toPrincipal;
+          splits[p.id] = { toInterest: toInterest, toPrincipal: toPrincipal };
+        });
+
+        if (now.getTime() > last) {
+          accrued += principalLeft * monthlyRate * ((now.getTime() - last) / 1000) / MONTH_SECONDS;
+        }
+
+        var interestDue = Math.max(0, accrued - interestPaid);
+        return {
+          principalLeft: principalLeft,
+          principalPaid: principalPaid,
+          interestAccrued: accrued,
+          interestPaid: interestPaid,
+          interestDue: interestDue,
+          totalDue: principalLeft + interestDue,
+          perSecond: principalLeft * monthlyRate / MONTH_SECONDS,
+          splits: splits
+        };
+      }
+
+      /* ---------- Grouping by lender ---------- */
+      function loanGroups(calcs) {
+        var order = [], byName = {};
+        loans.forEach(function (loan) {
+          if (!byName[loan.name]) {
+            byName[loan.name] = { name: loan.name, rate: loan.rate, tranches: [], principalOrig: 0, principalLeft: 0, interestDue: 0, paidTotal: 0, perSecond: 0, monthlyLabel: 0, firstDate: loan.borrowed };
+            order.push(byName[loan.name]);
+          }
+          var g = byName[loan.name];
+          var c = calcs[loan.id];
+          g.tranches.push(loan);
+          g.principalOrig += loan.principal;
+          g.principalLeft += c.principalLeft;
+          g.interestDue += c.interestDue;
+          g.paidTotal += c.principalPaid + c.interestPaid;
+          g.perSecond += c.perSecond;
+          g.monthlyLabel += loan.principal * loan.rate / 100;
+          if (loan.borrowed < g.firstDate) g.firstDate = loan.borrowed;
+        });
+        return order;
+      }
+
+      /* ---------- EMI helpers ---------- */
+      function emiPaidCount(e) {
+        return emiPayments.filter(function (p) { return p.name === e.name; }).length;
+      }
+      function emiLeft(e) {
+        var count = emiPaidCount(e);
+        if (typeof e.leftOverride === 'number') return Math.max(0, e.leftOverride - (count - e.basePaid) * e.emi);
+        return Math.max(0, (e.totalKists - count) * e.emi);
+      }
+      function emiRemaining() { return emis.reduce(function (s, e) { return s + emiLeft(e); }, 0); }
+      function emiPaidTotal() { return emis.reduce(function (s, e) { return s + emiPaidCount(e) * e.emi; }, 0); }
+      function emiMonthlyTotal() { return emis.reduce(function (s, e) { return s + e.emi; }, 0); }
+      function emiLastPayment(e) {
+        var mine = emiPayments.filter(function (p) { return p.name === e.name; });
+        return mine.length ? mine[mine.length - 1] : null;
+      }
+
+      /* ---------- Calendar ---------- */
+      function paymentsByDate() {
+        var map = {};
+        function add(date, amt) { map[date] = (map[date] || 0) + amt; }
+        payments.forEach(function (p) { add(p.date, p.amount); });
+        emiPayments.forEach(function (p) { add(p.date, p.amount); });
+        return map;
+      }
+      function renderCalendar() {
+        if (!calCursor) {
+          var t = new Date();
+          calCursor = { y: t.getFullYear(), m: t.getMonth() };
+        }
+        if (!selectedDate) selectedDate = todayStr();
+        $('calLabel').textContent = new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numeric' }).format(new Date(calCursor.y, calCursor.m, 1));
+        var byDate = paymentsByDate();
+        var first = new Date(calCursor.y, calCursor.m, 1);
+        var startDay = first.getDay();
+        var daysInMonth = new Date(calCursor.y, calCursor.m + 1, 0).getDate();
+        var today = todayStr();
+        var html = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(function (d) { return '<div class="cal-wd">' + d + '</div>'; }).join('');
+        for (var i = 0; i < startDay; i++) html += '<div></div>';
+        for (var d = 1; d <= daysInMonth; d++) {
+          var ds = calCursor.y + '-' + String(calCursor.m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+          var amt = byDate[ds];
+          html += '<button type="button" class="day' + (ds === today ? ' today' : '') + (ds === selectedDate ? ' selected' : '') + '" data-date="' + ds + '">' +
+            '<span class="dnum">' + d + '</span>' +
+            (amt ? '<span class="dcheck">✓</span><span class="damt">' + money(amt) + '</span>' : '') +
+            '</button>';
+        }
+        $('calGrid').innerHTML = html;
+        Array.prototype.forEach.call($('calGrid').querySelectorAll('.day'), function (btn) {
+          btn.addEventListener('click', function () { selectedDate = btn.getAttribute('data-date'); renderCalendar(); });
+        });
+
+        // Selected day detail
+        var dayLoans = payments.filter(function (p) { return p.date === selectedDate; });
+        var dayEmis = emiPayments.filter(function (p) { return p.date === selectedDate; });
+        var dayTotal = dayLoans.reduce(function (s, p) { return s + p.amount; }, 0) + dayEmis.reduce(function (s, p) { return s + p.amount; }, 0);
+        var detail = $('dayDetail');
+        var items = '';
+        dayEmis.forEach(function (p, idx) {
+          items += '<div class="pay-item">' + avatarHtml(p.name, 36) +
+            '<div class="who"><strong>' + esc(p.name) + '</strong><span>EMI kist · Monthly tick — ' + fmtMonth(p.date.slice(0, 7)) + '</span></div>' +
+            '<span class="amt tnum">' + money(p.amount) + '</span>' +
+            '<button type="button" class="icon-btn" data-del-emi="' + idx + '" aria-label="Ye EMI payment hatayein">✕</button></div>';
+        });
+        dayLoans.forEach(function (p) {
+          var loan = loans.find(function (l) { return l.id === p.loanId; });
+          var nm = loan ? loan.name : 'Loan';
+          items += '<div class="pay-item">' + avatarHtml(nm, 36) +
+            '<div class="who"><strong>' + esc(nm) + '</strong><span>Payment · ' + (loan ? fmtDate(loan.borrowed) + ' wala karz' : '') + '</span></div>' +
+            '<span class="amt tnum">' + money(p.amount) + '</span>' +
+            '<button type="button" class="icon-btn" data-del-pay="' + p.id + '" aria-label="Ye payment hatayein">✕</button></div>';
+        });
+        var options = loans.map(function (l) {
+          return '<option value="loan:' + l.id + '">' + esc(l.name) + ' · ' + money(l.principal) + ' (' + fmtDate(l.borrowed) + ')</option>';
+        }).join('') + emis.map(function (e) {
+          return '<option value="emi:' + esc(e.name) + '">' + esc(e.name) + ' (EMI)</option>';
+        }).join('');
+        detail.innerHTML =
+          '<div class="day-detail-head"><strong>' + fmtDayShort(selectedDate) + '</strong>' +
+          '<span class="tnum">' + (dayTotal > 0 ? 'Kul diya ' + money(dayTotal) : 'Is din koi payment nahi') + '</span></div>' +
+          items +
+          '<button type="button" class="add-day-btn" id="toggleDayForm">+ Is din payment jodein</button>' +
+          '<form class="form-panel" id="dayForm" hidden style="margin-top:10px;">' +
+            '<div class="form-grid">' +
+              '<div class="field wide"><label for="dLoan">Karz / EMI</label><select id="dLoan">' + options + '</select></div>' +
+              '<div class="field wide"><label for="dAmount">Rakam (₹)</label><input id="dAmount" type="number" inputmode="decimal" min="0" step="any" placeholder="5,000" /></div>' +
+              '<button class="btn-primary wide" type="submit" style="grid-column:1/-1;width:100%;">Payment jodein · ' + fmtDayShort(selectedDate) + '</button>' +
+            '</div>' +
+            '<p class="form-error" id="dayError"></p>' +
+          '</form>';
+
+        detail.querySelector('#toggleDayForm').addEventListener('click', function () {
+          var f = detail.querySelector('#dayForm');
+          f.hidden = !f.hidden;
+          if (!f.hidden) detail.querySelector('#dAmount').focus();
+        });
+        detail.querySelector('#dayForm').addEventListener('submit', function (ev) {
+          ev.preventDefault();
+          var err = detail.querySelector('#dayError');
+          err.style.display = 'none';
+          var amount = parseFloat(detail.querySelector('#dAmount').value);
+          if (!amount || amount <= 0) { err.textContent = 'Sahi rakam daalein.'; err.style.display = 'block'; return; }
+          var val = detail.querySelector('#dLoan').value;
+          if (val.indexOf('emi:') === 0) {
+            emiPayments.push({ name: val.slice(4), amount: amount, date: selectedDate });
+          } else {
+            var loanId = Number(val.slice(5));
+            var loan = loans.find(function (l) { return l.id === loanId; });
+            if (loan && selectedDate < loan.borrowed) { err.textContent = 'Payment ki date karz lene ki date se pehle nahi ho sakti.'; err.style.display = 'block'; return; }
+            payments.push({ id: seq++, loanId: loanId, amount: amount, date: selectedDate });
+          }
+          renderAll();
+        });
+        Array.prototype.forEach.call(detail.querySelectorAll('[data-del-pay]'), function (btn) {
+          btn.addEventListener('click', function () {
+            var pid = Number(btn.getAttribute('data-del-pay'));
+            payments = payments.filter(function (p) { return p.id !== pid; });
+            renderAll();
+          });
+        });
+        Array.prototype.forEach.call(detail.querySelectorAll('[data-del-emi]'), function (btn) {
+          btn.addEventListener('click', function () {
+            var idx = Number(btn.getAttribute('data-del-emi'));
+            var target = dayEmis[idx];
+            var pos = emiPayments.indexOf(target);
+            if (pos !== -1) emiPayments.splice(pos, 1);
+            renderAll();
+          });
+        });
+
+        var key = calCursor.y + '-' + String(calCursor.m + 1).padStart(2, '0');
+        var mTotal = 0, mCount = 0;
+        payments.concat(emiPayments).forEach(function (p) {
+          if (p.date.slice(0, 7) === key) { mTotal += p.amount; mCount += 1; }
+        });
+        $('calMonthTotal').textContent = fmtMonth(key) + ' me kul diya: ' + money(mTotal) + ' · ' + mCount + ' payment';
+      }
+
+      /* ---------- Is Mahine Ki List (tick list) ---------- */
+      function tickItems(nowKey) {
+        var items = [];
+        emis.forEach(function (e) {
+          var mine = emiPayments.filter(function (p) { return p.name === e.name && p.date.slice(0, 7) === nowKey; });
+          items.push({
+            kind: 'emi', name: e.name, amount: e.emi,
+            done: mine.length > 0,
+            paidAmt: mine.reduce(function (s, p) { return s + p.amount; }, 0),
+            doneDate: mine.length ? mine[0].date : null,
+            pendingSub: 'EMI kist · har mahine 2 tarikh ko'
+          });
+        });
+        var calcs = {};
+        loans.forEach(function (l) { calcs[l.id] = calcLoan(l, new Date()); });
+        loanGroups(calcs).forEach(function (g) {
+          if (g.rate <= 0) return;
+          var ids = g.tranches.map(function (t) { return t.id; });
+          var mine = payments.filter(function (p) { return ids.indexOf(p.loanId) !== -1 && p.date.slice(0, 7) === nowKey; });
+          items.push({
+            kind: 'loan', name: g.name, amount: g.monthlyLabel, group: g,
+            done: mine.length > 0,
+            paidAmt: mine.reduce(function (s, p) { return s + p.amount; }, 0),
+            doneDate: mine.length ? mine[0].date : null,
+            pendingSub: 'Byaaj · ' + g.rate + '%/mah · baki ' + money(g.principalLeft)
+          });
+        });
+        return items;
+      }
+      function renderTicks() {
+        var now = new Date();
+        var nowKey = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+        $('tickSub').textContent = fmtMonth(nowKey) + ' · paisa do, tick lagao';
+        var items = tickItems(nowKey);
+        var doneCount = items.filter(function (i) { return i.done; }).length;
+        var diya = items.reduce(function (s, i) { return s + (i.done ? i.paidAmt : 0); }, 0);
+        var baki = items.reduce(function (s, i) { return s + (i.done ? 0 : i.amount); }, 0);
+        $('tickSummary').innerHTML =
+          '<span class="tick-count">' + doneCount + ' / ' + items.length + ' done</span>' +
+          '<span class="chip diya tnum">' + money(diya) + ' diya</span>' +
+          '<span class="chip baki tnum">' + money(baki) + ' baki</span>';
+        var wrap = $('tickList');
+        wrap.innerHTML = '';
+        items.forEach(function (item) {
+          var row = document.createElement('div');
+          row.className = 'tick-row' + (item.done ? ' done' : '');
+          row.innerHTML = avatarHtml(item.name) +
+            '<div class="who"><strong>' + esc(item.name) + '</strong><span>' +
+              (item.done ? '✓ Diya — ' + fmtDayShort(item.doneDate) : esc(item.pendingSub)) + '</span></div>' +
+            '<span class="amt tnum">' + money(item.amount) + '</span>';
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'tick-btn' + (item.done ? ' done tick-anim' : '');
+          btn.setAttribute('aria-label', item.done ? item.name + ' ka tick hatayein' : item.name + ' ka paisa diya — tick lagayein');
+          btn.textContent = '✓';
+          btn.addEventListener('click', function () { toggleTick(item, nowKey); });
+          row.appendChild(btn);
+          wrap.appendChild(row);
+        });
+      }
+      function toggleTick(item, nowKey) {
+        var date2 = nowKey + '-02';
+        if (item.kind === 'emi') {
+          if (item.done) {
+            emiPayments = emiPayments.filter(function (p) { return !(p.name === item.name && p.date.slice(0, 7) === nowKey); });
+          } else {
+            emiPayments.push({ name: item.name, amount: item.amount, date: date2 });
+          }
+        } else {
+          var ids = item.group.tranches.map(function (t) { return t.id; });
+          if (item.done) {
+            payments = payments.filter(function (p) { return !(ids.indexOf(p.loanId) !== -1 && p.date.slice(0, 7) === nowKey); });
+          } else {
+            payments.push({ id: seq++, loanId: ids[0], amount: item.amount, date: date2 });
+          }
+        }
+        renderAll();
+      }
+
+      /* ---------- Har Mahine Kitna Diya ---------- */
+      function renderMonthly() {
+        var byMonth = {};
+        payments.forEach(function (p) {
+          var k = p.date.slice(0, 7);
+          if (!byMonth[k]) byMonth[k] = { total: 0, count: 0, emi: 0, loan: 0 };
+          byMonth[k].total += p.amount; byMonth[k].count += 1; byMonth[k].loan += p.amount;
+        });
+        emiPayments.forEach(function (p) {
+          var k = p.date.slice(0, 7);
+          if (!byMonth[k]) byMonth[k] = { total: 0, count: 0, emi: 0, loan: 0 };
+          byMonth[k].total += p.amount; byMonth[k].count += 1; byMonth[k].emi += p.amount;
+        });
+        var keys = Object.keys(byMonth).sort().reverse();
+        $('monthEmpty').style.display = keys.length ? 'none' : 'block';
+        $('monthList').innerHTML = keys.map(function (k) {
+          var m = byMonth[k];
+          var parts = [m.count + (m.count === 1 ? ' payment' : ' payment')];
+          if (m.emi > 0) parts.push('EMI ' + money(m.emi));
+          if (m.loan > 0) parts.push('Byaaj ' + money(m.loan));
+          return '<div class="month-row"><div><strong>' + fmtMonth(k) + '</strong><span>' + parts.join(' · ') + '</span></div><b class="tnum">' + money(m.total) + '</b></div>';
+        }).join('');
+      }
+
+      /* ---------- Saare Karz (grouped loan list) ---------- */
+      function trancheBlock(loan) {
+        var block = document.createElement('div');
+        block.className = 'tranche-block';
+        block.setAttribute('data-loan', loan.id);
+        block.innerHTML =
+          '<p class="tranche-title">' + money(loan.principal) + ' liya · ' + fmtDate(loan.borrowed) + (loans.filter(function (l) { return l.name === loan.name; }).length > 1 ? ' wala hisaa' : '') + '</p>' +
+          '<div class="amount-line"><span>Principal left</span><strong class="tnum" data-role="principal-left">—</strong></div>' +
+          '<div class="amount-line hl"><span>Interest due <small data-role="per-sec"></small></span><strong class="tnum" data-role="interest-due">—</strong></div>' +
+          '<div class="amount-line ok"><span>Total paid on this hisaa</span><strong class="tnum" data-role="paid">—</strong></div>' +
+          '<div class="progress-track"><div class="progress-fill" data-role="fill" style="width:0%"></div></div>' +
+          '<div class="progress-copy"><span data-role="progress-note"></span><b class="tnum" data-role="progress-pct"></b></div>' +
+          '<form class="pay-form" data-role="pay-form">' +
+            '<div class="field"><label>Payment amount (₹)</label><input data-role="pay-amount" type="number" inputmode="decimal" min="0" step="any" placeholder="5,000" /></div>' +
+            '<div class="field"><label>Payment date</label><input data-role="pay-date" type="date" /></div>' +
+            '<button class="btn-primary" type="submit">Add payment</button>' +
+          '</form>' +
+          '<p class="form-error" data-role="pay-error"></p>' +
+          '<div class="pay-history" data-role="history-wrap" hidden><h3>Payments</h3><div data-role="history"></div></div>' +
+          '<div class="card-actions"><button class="btn-danger" type="button" data-role="delete">Delete loan</button></div>';
+
+        block.querySelector('[data-role="pay-date"]').value = todayStr();
+        block.querySelector('[data-role="pay-form"]').addEventListener('submit', function (ev) {
+          ev.preventDefault();
+          var amountInput = block.querySelector('[data-role="pay-amount"]');
+          var dateInput = block.querySelector('[data-role="pay-date"]');
+          var err = block.querySelector('[data-role="pay-error"]');
+          var amount = parseFloat(amountInput.value);
+          var date = dateInput.value;
+          err.style.display = 'none';
+          if (!amount || amount <= 0) { err.textContent = 'Payment ki rakam daalein.'; err.style.display = 'block'; return; }
+          if (!date) { err.textContent = 'Calendar se date chunein.'; err.style.display = 'block'; return; }
+          if (date < loan.borrowed) { err.textContent = 'Payment ki date karz lene ki date se pehle nahi ho sakti.'; err.style.display = 'block'; return; }
+          payments.push({ id: seq++, loanId: loan.id, amount: amount, date: date });
+          renderAll();
+        });
+        var delBtn = block.querySelector('[data-role="delete"]');
+        delBtn.addEventListener('click', function () {
+          if (!delBtn.classList.contains('armed')) {
+            delBtn.classList.add('armed');
+            delBtn.textContent = 'Tap again to delete';
+            setTimeout(function () { delBtn.classList.remove('armed'); delBtn.textContent = 'Delete loan'; }, 3000);
+            return;
+          }
+          loans = loans.filter(function (l) { return l.id !== loan.id; });
+          payments = payments.filter(function (p) { return p.loanId !== loan.id; });
+          renderAll();
+        });
+        return block;
+      }
+
+      function emiBlock(e) {
+        var count = emiPaidCount(e);
+        var left = emiLeft(e);
+        var paidAmt = count * e.emi;
+        var rem = e.totalKists - count;
+        var pct = Math.round(count / e.totalKists * 100);
+        var last = emiLastPayment(e);
+        var wrap = document.createElement('div');
+        wrap.innerHTML =
+          '<div class="amount-line"><span>Kist</span><strong class="tnum">' + money(e.emi) + ' /mahina</strong></div>' +
+          '<div class="amount-line"><span>Kul liya</span><strong class="tnum">' + money(e.borrowed) + '</strong></div>' +
+          '<div class="amount-line ok"><span>Ab tak diya</span><strong class="tnum">' + money(paidAmt) + ' · ' + count + ' kist</strong></div>' +
+          '<div class="amount-line hl"><span>Baki</span><strong class="tnum">' + money(left) + ' · ' + rem + ' kist</strong></div>' +
+          (last ? '<span class="emi-badge">✓ ' + fmtMonth(last.date.slice(0, 7)) + ' ki kist de di · ' + fmtDayShort(last.date) + '</span>' : '') +
+          '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+          '<div class="progress-copy"><span>' + count + ' of ' + e.totalKists + ' kists</span><b class="tnum">' + pct + '%</b></div>';
+        return wrap;
+      }
+
+      function renderLoans(calcs) {
+        var list = $('loanList');
+        list.innerHTML = '';
+        $('emptyState').hidden = loans.length > 0;
+        var groups = loanGroups(calcs);
+
+        groups.forEach(function (g) {
+          var head = document.createElement('button');
+          head.type = 'button';
+          head.className = 'loan-row-head';
+          head.setAttribute('aria-expanded', openGroups[g.name] ? 'true' : 'false');
+          var lines = '';
+          if (g.rate > 0) {
+            lines = '<span>Byaaj ' + g.rate + '%/mah · har mahine ' + money(g.monthlyLabel) + '</span>' +
+              '<span>' + g.tranches.length + ' hisse me liya · pehla ' + fmtDate(g.firstDate) + '</span>' +
+              '<span class="live-line" data-role="row-live">Live +₹0.0000/sec badh raha hai</span>';
+          } else {
+            lines = '<span>Bina byaaj</span><span>' + fmtDate(g.firstDate) + ' ko liya</span>';
+          }
+          head.innerHTML = avatarHtml(g.name) +
+            '<span class="loan-main"><strong>' + esc(g.name) + '</strong>' + lines + '</span>' +
+            '<span class="loan-right"><strong class="tnum" data-role="row-total">—</strong><span class="tnum" data-role="row-sub"></span></span>';
+          head.setAttribute('data-group', g.name);
+          var detail = document.createElement('div');
+          detail.className = 'loan-detail';
+          detail.hidden = !openGroups[g.name];
+          g.tranches.forEach(function (loan) { detail.appendChild(trancheBlock(loan)); });
+          head.addEventListener('click', function () {
+            openGroups[g.name] = !openGroups[g.name];
+            detail.hidden = !openGroups[g.name];
+            head.setAttribute('aria-expanded', openGroups[g.name] ? 'true' : 'false');
+          });
+          list.appendChild(head);
+          list.appendChild(detail);
+        });
+
+        emis.forEach(function (e) {
+          var key = 'emi:' + e.name;
+          var head = document.createElement('button');
+          head.type = 'button';
+          head.className = 'loan-row-head';
+          head.setAttribute('aria-expanded', openGroups[key] ? 'true' : 'false');
+          head.innerHTML = avatarHtml(e.name) +
+            '<span class="loan-main"><strong>' + esc(e.name) + ' (EMI)</strong>' +
+            '<span>EMI ' + money(e.emi) + '/mah · ' + (e.totalKists - emiPaidCount(e)) + ' kist bachi</span>' +
+            '<span>' + esc(e.detail) + '</span></span>' +
+            '<span class="loan-right"><strong class="tnum">' + money(emiLeft(e)) + '</strong><span class="tnum">kul liya ' + money(e.borrowed) + '</span></span>';
+          var detail = document.createElement('div');
+          detail.className = 'loan-detail';
+          detail.hidden = !openGroups[key];
+          detail.appendChild(emiBlock(e));
+          head.addEventListener('click', function () {
+            openGroups[key] = !openGroups[key];
+            detail.hidden = !openGroups[key];
+            head.setAttribute('aria-expanded', openGroups[key] ? 'true' : 'false');
+          });
+          list.appendChild(head);
+          list.appendChild(detail);
+        });
+      }
+
+      function refreshTranche(loan, calc) {
+        var block = document.querySelector('.tranche-block[data-loan="' + loan.id + '"]');
+        if (!block) return;
+        block.querySelector('[data-role="principal-left"]').textContent = money(calc.principalLeft);
+        block.querySelector('[data-role="interest-due"]').textContent = money(calc.interestDue, 2);
+        block.querySelector('[data-role="per-sec"]').textContent = calc.perSecond > 0 ? '· +' + money(calc.perSecond, 4) + '/sec' : '';
+        var paidTotal = calc.principalPaid + calc.interestPaid;
+        block.querySelector('[data-role="paid"]').textContent = money(paidTotal);
+        var totalEver = loan.principal + calc.interestAccrued;
+        var pct = totalEver > 0 ? Math.min(100, paidTotal / totalEver * 100) : 100;
+        block.querySelector('[data-role="fill"]').style.width = pct.toFixed(1) + '%';
+        block.querySelector('[data-role="progress-note"]').textContent = money(paidTotal) + ' paid of ' + money(totalEver) + ' (principal + interest so far)';
+        block.querySelector('[data-role="progress-pct"]').textContent = pct.toFixed(0) + '%';
+
+        var mine = payments.filter(function (p) { return p.loanId === loan.id; })
+          .slice().sort(function (a, b) { return a.date > b.date ? -1 : a.date < b.date ? 1 : b.id - a.id; });
+        var wrap = block.querySelector('[data-role="history-wrap"]');
+        var hist = block.querySelector('[data-role="history"]');
+        wrap.hidden = mine.length === 0;
+        hist.innerHTML = '';
+        mine.forEach(function (p) {
+          var split = calc.splits[p.id] || { toInterest: 0, toPrincipal: 0 };
+          var row = document.createElement('div');
+          row.className = 'hist-row';
+          row.innerHTML = '<span>' + fmtDate(p.date) + '<span class="split">Interest ' + money(split.toInterest) + ' · Principal ' + money(split.toPrincipal) + '</span></span>';
+          var amt = document.createElement('span');
+          amt.className = 'hamt tnum';
+          amt.textContent = money(p.amount);
+          var del = document.createElement('button');
+          del.className = 'icon-btn';
+          del.type = 'button';
+          del.setAttribute('aria-label', 'Remove this payment');
+          del.textContent = '✕';
+          del.addEventListener('click', function () {
+            payments = payments.filter(function (x) { return x.id !== p.id; });
+            renderAll();
+          });
+          amt.appendChild(del);
+          row.appendChild(amt);
+          hist.appendChild(row);
+        });
+      }
+
+      /* ---------- Per-loan live rows (hero panel) ---------- */
+      function renderPerLoan(groups) {
+        var wrap = $('perLoanList');
+        wrap.innerHTML = '';
+        groups.filter(function (g) { return g.rate > 0; }).forEach(function (g) {
+          var row = document.createElement('div');
+          row.className = 'perloan-row tnum';
+          row.innerHTML = '<span class="who">' + esc(g.name) + ' <span>· ' + money(g.monthlyLabel) + '/mahina</span></span>' +
+            '<span class="val" data-perloan="' + esc(g.name) + '">+₹0.0000/sec</span>';
+          wrap.appendChild(row);
+        });
+      }
+
+      /* ---------- Live update (har second) ---------- */
+      function updateLive() {
+        var now = new Date();
+        var calcs = {};
+        loans.forEach(function (loan) { calcs[loan.id] = calcLoan(loan, now); });
+        var groups = loanGroups(calcs);
+
+        var principalLeft = 0, interestDue = 0, interestPaid = 0, paidAll = 0, perSecond = 0, monthlyByaj = 0;
+        groups.forEach(function (g) {
+          principalLeft += g.principalLeft;
+          interestDue += g.interestDue;
+          paidAll += g.paidTotal;
+          perSecond += g.perSecond;
+          if (g.rate > 0) monthlyByaj += g.monthlyLabel;
+        });
+        loans.forEach(function (loan) { interestPaid += calcs[loan.id].interestPaid; });
+
+        var emiLeftTotal = emiRemaining();
+        var heroPrincipal = principalLeft + emiLeftTotal;
+        var grandTotal = heroPrincipal + interestDue;
+        var totalPaidAll = paidAll + emiPaidTotal();
+        var karzCount = groups.length + emis.length;
+
+        if (loadTotal === null) loadTotal = grandTotal;
+
+        $('grandTotal').innerHTML = moneyHtml(grandTotal);
+        $('heroPer').textContent = 'Har second +' + money(perSecond, 4) + ' badh raha hai';
+        $('heroSub').textContent = 'Principal ' + money(heroPrincipal) + ' + byaaj ' + money(interestDue) + ' · ' + karzCount + ' karz chal rahe hain';
+        $('rateSecondBig').textContent = '+' + money(perSecond, 4);
+        $('rateMinute').textContent = '+' + money(perSecond * 60, 2);
+        $('rateHour').textContent = '+' + money(perSecond * 3600, 2);
+        $('rateDay').textContent = '+' + money(perSecond * 86400, 2);
+        $('sessionGain').textContent = '+' + money(Math.max(0, grandTotal - loadTotal), 4);
+        $('interestBig').innerHTML = moneyHtml(interestDue);
+        $('interestSub').textContent = 'Har mahine ' + money(monthlyByaj) + ' aur badh raha hai · har second +' + money(perSecond, 4) + ' · ab tak byaaj diya ' + money(interestPaid);
+        $('tileTotal').textContent = money(grandTotal);
+        $('tileTotalSub').textContent = 'Principal ' + money(heroPrincipal) + ' + byaaj ' + money(interestDue);
+        $('tileByaj').textContent = money(monthlyByaj);
+        $('tileByajSub').textContent = 'Ab tak byaaj me diya: ' + money(interestPaid);
+        $('tilePaid').textContent = money(totalPaidAll);
+        $('tileBojh').textContent = money(monthlyByaj + emiMonthlyTotal());
+        $('tileBojhSub').textContent = 'Byaaj ' + money(monthlyByaj) + ' + EMI ' + money(emiMonthlyTotal());
+
+        groups.forEach(function (g) {
+          var val = document.querySelector('[data-perloan="' + g.name + '"]');
+          if (val) val.textContent = '+' + money(g.perSecond, 4) + '/sec';
+          var head = document.querySelector('.loan-row-head[data-group="' + g.name + '"]');
+          if (head) {
+            head.querySelector('[data-role="row-total"]').textContent = money(g.principalLeft + g.interestDue);
+            head.querySelector('[data-role="row-sub"]').textContent = g.rate > 0
+              ? 'principal ' + money(g.principalLeft) + ' + byaaj ' + money(g.interestDue)
+              : 'kul liya ' + money(g.principalOrig);
+            var live = head.querySelector('[data-role="row-live"]');
+            if (live) live.textContent = 'Live +' + money(g.perSecond, 4) + '/sec badh raha hai';
+          }
+          g.tranches.forEach(function (loan) { refreshTranche(loan, calcs[loan.id]); });
+        });
+      }
+
+      /* ---------- Render all (data badalne par) ---------- */
+      function renderAll() {
+        var calcs = {};
+        loans.forEach(function (loan) { calcs[loan.id] = calcLoan(loan, new Date()); });
+        var groups = loanGroups(calcs);
+        renderPerLoan(groups);
+        renderCalendar();
+        renderTicks();
+        renderMonthly();
+        renderLoans(calcs);
+        updateLive();
+      }
+
+      /* ---------- Calendar nav ---------- */
+      $('calPrev').addEventListener('click', function () {
+        calCursor.m -= 1;
+        if (calCursor.m < 0) { calCursor.m = 11; calCursor.y -= 1; }
+        renderCalendar();
+      });
+      $('calNext').addEventListener('click', function () {
+        calCursor.m += 1;
+        if (calCursor.m > 11) { calCursor.m = 0; calCursor.y += 1; }
+        renderCalendar();
+      });
+
+      /* ---------- Add loan ---------- */
+      $('fDate').value = todayStr();
+      $('toggleLoanForm').addEventListener('click', function () {
+        var f = $('loanForm');
+        f.hidden = !f.hidden;
+        $('toggleLoanForm').textContent = f.hidden ? '+ Naya karz' : 'Band karein';
+        if (!f.hidden) $('fName').focus();
+      });
+      $('loanForm').addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var err = $('loanError');
+        err.style.display = 'none';
+        var name = $('fName').value.trim();
+        var amount = parseFloat($('fAmount').value);
+        var rateVal = $('fRate').value;
+        var rate = rateVal === '' ? 0 : parseFloat(rateVal);
+        var date = $('fDate').value;
+        if (!name) { err.textContent = 'Lender ka naam daalein.'; err.style.display = 'block'; return; }
+        if (!amount || amount <= 0) { err.textContent = 'Sahi rakam daalein.'; err.style.display = 'block'; return; }
+        if (isNaN(rate) || rate < 0) { err.textContent = 'Interest rate 0 ya usse zyada hona chahiye.'; err.style.display = 'block'; return; }
+        if (!date) { err.textContent = 'Calendar se karz lene ki date chunein.'; err.style.display = 'block'; return; }
+        loans.push({ id: seq++, name: name, principal: amount, rate: rate, borrowed: date });
+        openGroups[name] = true;
+        $('fName').value = ''; $('fAmount').value = ''; $('fRate').value = '';
+        $('fDate').value = todayStr();
+        $('loanForm').hidden = true;
+        $('toggleLoanForm').textContent = '+ Naya karz';
+        renderAll();
+      });
+
+      renderAll();
+      setInterval(updateLive, 1000);
+    }());
+  </script>
+</body>
+</html>
