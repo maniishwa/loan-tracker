@@ -1,1103 +1,996 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="color-scheme" content="light dark" />
-  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#202124" media="(prefers-color-scheme: dark)" />
-  <link rel="icon" href="data:," />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-  <title>Loan Tracker</title>
-  <style>
-    :root {
-      color-scheme: light dark;
-      --bg: #ffffff;
-      --surface: #ffffff;
-      --surface2: #f8f9fa;
-      --text: #202124;
-      --dim: #5f6368;
-      --border: #e8eaed;
-      --accent: #1a73e8;
-      --accent-soft: #e8f0fe;
-      --green: #188038;
-      --green-dark: #137333;
-      --green-soft: #e6f4ea;
-      --live-green: #22c55e;
-      --red: #d93025;
-      --red-soft: #fce8e6;
-      --amber: #b06000;
-      --amber-soft: #fef7e0;
-      --blue: #1a73e8;
-      --blue-soft: #e8f0fe;
-      --radius: 24px;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #202124;
-        --surface: #202124;
-        --surface2: #2d2e30;
-        --text: #e8eaed;
-        --dim: #9aa0a6;
-        --border: #3c4043;
-        --accent: #8ab4f8;
-        --accent-soft: #303f5c;
-        --green: #81c995;
-        --green-dark: #81c995;
-        --green-soft: #1e3329;
-        --red: #f28b82;
-        --red-soft: #3d2421;
-        --amber: #fdd663;
-        --amber-soft: #332b10;
-        --blue: #8ab4f8;
-        --blue-soft: #303f5c;
+<html lang="hi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="data:," />
+    <title>Loan Tracker — Manish Kumar</title>
+    <style>
+      :root{
+        color-scheme: dark;
+        --bg:#0b0b0f; --bg2:#131318; --card:#1c1c22; --card2:#26262e;
+        --line:#2e2e38; --text:#f2f2f5; --muted:#a7a7b3; --faint:#7c7c8a;
+        --blue:#1a73e8; --blue-d:#1558b0; --green:#34a853; --green-t:#7bd88f;
+        --red:#e5484d; --amber:#f9ab00; --chip:#23232b;
+        --sheet:#17171d;
+        --shadow:0 10px 30px rgba(0,0,0,.45);
       }
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: Roboto, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-      font-size: 16px;
-      line-height: 1.45;
-      -webkit-tap-highlight-color: transparent;
-    }
-    button, input, select { font: inherit; }
-    button { cursor: pointer; }
-    .tnum { font-variant-numeric: tabular-nums; }
-    .page { width: min(672px, 100%); margin: 0 auto; padding: 32px 20px 96px; }
+      *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+      html,body{margin:0;padding:0;}
+      body{
+        background:var(--bg); color:var(--text);
+        font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+        font-size:15px; line-height:1.45;
+      }
+      button,[role="button"],input,select{font:inherit;}
+      button{min-height:40px; cursor:pointer;}
+      .wrap{max-width:560px; margin:0 auto; padding:0 16px 110px;}
 
-    .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 9999px; background: var(--live-green); animation: livePulse 1.1s ease-in-out infinite; flex-shrink: 0; }
-    @keyframes livePulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.45); opacity: .5; } 100% { transform: scale(1); opacity: 1; } }
-    @keyframes tickIn { 0% { transform: scale(.7); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
-    .tick-anim { animation: tickIn .22s ease both; }
+      /* ---------- top ---------- */
+      .topbar{display:flex; align-items:center; gap:10px; padding:14px 0 10px;}
+      .search{
+        flex:1; display:flex; align-items:center; gap:9px;
+        background:var(--card2); border-radius:999px; padding:0 16px; height:48px;
+      }
+      .search svg{flex:none; opacity:.75;}
+      .search input{
+        flex:1; background:none; border:0; outline:0; color:var(--text);
+        font-size:14.5px; min-width:0;
+      }
+      .search input::placeholder{color:var(--muted);}
+      .avatar{
+        flex:none; display:flex; align-items:center; justify-content:center;
+        border-radius:50%; color:#fff; font-weight:600; letter-spacing:.02em;
+        width:42px; height:42px; font-size:14px;
+      }
+      .avatar.sm{width:38px;height:38px;font-size:12.5px;}
+      .avatar.lg{width:46px;height:46px;font-size:15px;}
 
-    /* ---------- Hero ---------- */
-    .hero { text-align: center; }
-    .hero-label { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; font-size: 14px; color: var(--dim); }
-    .live-pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; background: var(--green-soft); padding: 2px 8px; font-size: 11px; font-weight: 700; letter-spacing: .04em; color: var(--green-dark); }
-    .hero-total { margin: 4px 0 0; font-size: 42px; font-weight: 400; line-height: 1.15; letter-spacing: -.01em; }
-    .hero-total .frac, .big-value .frac { font-size: .52em; opacity: .75; }
-    .hero-per { margin: 2px 0 0; font-size: 14px; font-weight: 500; color: var(--green-dark); }
-    .hero-sub { margin: 2px 0 0; font-size: 14px; color: var(--dim); }
+      /* ---------- banner illustration ---------- */
+      .banner{
+        border-radius:20px; overflow:hidden; margin:4px 0 16px;
+        background:linear-gradient(180deg,#101623 0%,#12251c 100%);
+        border:1px solid var(--line);
+      }
+      .banner svg{display:block; width:100%; height:auto;}
 
-    /* ---------- Live byaaj panel ---------- */
-    .panel-live { margin-top: 20px; border-radius: var(--radius); background: var(--surface2); padding: 16px; }
-    .panel-head { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 13px; font-weight: 700; color: var(--green-dark); }
-    .rate-label { margin: 12px 0 0; text-align: center; font-size: 13px; font-weight: 500; color: var(--dim); }
-    .big-rate { margin: 2px 0 0; text-align: center; font-size: 36px; font-weight: 500; line-height: 1.2; }
-    .big-rate .per { font-size: 15px; font-weight: 400; color: var(--dim); }
-    .rate-boxes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; text-align: center; }
-    .rate-box { border-radius: 16px; background: var(--surface); padding: 10px 8px; }
-    .rate-box span { display: block; font-size: 11px; color: var(--dim); }
-    .rate-box strong { display: block; margin-top: 2px; font-size: 15px; font-weight: 500; }
-    .session-line { margin: 12px 0 0; text-align: center; font-size: 13px; color: var(--dim); }
-    .session-line strong { font-weight: 500; color: var(--text); }
-    .divider { height: 1px; width: 80%; margin: 12px auto; background: var(--border); }
-    .perloan-label { margin: 0; font-size: 12px; font-weight: 500; color: var(--dim); }
-    .perloan-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 6px; font-size: 13px; }
-    .perloan-row .who { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .perloan-row .who span { color: var(--dim); }
-    .perloan-row .val { flex-shrink: 0; font-weight: 500; color: var(--green-dark); }
+      /* ---------- summary card ---------- */
+      .summary{
+        background:var(--card); border:1px solid var(--line);
+        border-radius:20px; padding:18px 18px 14px; margin-bottom:20px;
+      }
+      .summary .lbl{color:var(--muted); font-size:13px;}
+      .summary .big{font-size:32px; font-weight:700; letter-spacing:-.01em; margin:2px 0 12px;}
+      .bar{height:5px; border-radius:99px; background:var(--card2); overflow:hidden;}
+      .bar i{display:block; height:100%; background:var(--blue); border-radius:99px; transition:width .5s ease;}
+      .summary .row{display:flex; justify-content:space-between; gap:12px; margin-top:10px; font-size:13px; color:var(--muted); flex-wrap:wrap;}
+      .summary .row b{color:var(--text); font-weight:600;}
 
-    /* ---------- Amber byaaj panel ---------- */
-    .panel-amber { margin-top: 24px; border-radius: var(--radius); background: var(--amber-soft); padding: 16px; text-align: center; }
-    .panel-amber .panel-head { justify-content: center; font-weight: 500; color: var(--amber); }
-    .big-value { margin: 2px 0 0; font-size: 36px; font-weight: 500; line-height: 1.2; }
-    .panel-amber .sub { margin: 2px 0 0; font-size: 13px; color: var(--dim); }
+      /* ---------- sections ---------- */
+      .sec-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:22px 0 12px;}
+      .sec-head h2{font-size:19px; font-weight:600; margin:0;}
+      .sec-head .cnt{color:var(--faint); font-size:13px;}
 
-    /* ---------- Stat tiles ---------- */
-    .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 28px; }
-    .tile { border-radius: var(--radius); padding: 16px; }
-    .tile p { margin: 0; }
-    .tile .t-label { font-size: 13px; font-weight: 500; }
-    .tile .t-value { margin-top: 4px; font-size: 22px; font-weight: 500; line-height: 1.1; }
-    .tile .t-value .unit { font-size: 13px; color: var(--dim); }
-    .tile .t-sub { margin-top: 6px; font-size: 12px; color: var(--dim); }
-    .tile.red { background: var(--red-soft); } .tile.red .t-label { color: var(--red); }
-    .tile.amber { background: var(--amber-soft); } .tile.amber .t-label { color: var(--amber); }
-    .tile.green { background: var(--green-soft); } .tile.green .t-label { color: var(--green); }
-    .tile.blue { background: var(--blue-soft); } .tile.blue .t-label { color: var(--blue); }
+      /* upcoming button */
+      .upcoming-btn{
+        width:100%; display:flex; align-items:center; gap:12px; text-align:left;
+        background:var(--card); border:1px solid var(--line); color:var(--text);
+        border-radius:16px; padding:14px 16px;
+      }
+      .upcoming-btn .ic{
+        width:38px;height:38px; flex:none; border-radius:12px;
+        background:rgba(249,171,0,.14); display:flex; align-items:center; justify-content:center;
+      }
+      .upcoming-btn .t1{font-weight:600; font-size:15.5px;}
+      .upcoming-btn .t2{color:var(--muted); font-size:12.5px; margin-top:1px;}
+      .upcoming-btn .amt{margin-left:auto; text-align:right; flex:none;}
+      .upcoming-btn .amt .a{color:var(--amber); font-weight:700; font-size:16px;}
+      .upcoming-btn .amt .d{color:var(--faint); font-size:11.5px;}
+      .upcoming-btn .chev{color:var(--faint); flex:none;}
 
-    /* ---------- Sections ---------- */
-    .section { margin-top: 36px; }
-    .sec-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .sec-head h2 { margin: 0; font-size: 18px; font-weight: 500; }
-    .sec-sub { margin: 4px 0 0; font-size: 13px; color: var(--dim); }
-    .month-nav { display: flex; align-items: center; gap: 4px; }
-    .nav-btn { display: flex; width: 40px; height: 40px; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: transparent; font-size: 20px; color: var(--dim); }
-    .nav-btn:active { background: var(--surface2); }
-    .month-label { min-width: 132px; text-align: center; font-size: 15px; font-weight: 500; margin: 0; }
+      /* ---------- folder grid (2 per row) ---------- */
+      .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+      @media (max-width:359px){ .grid{grid-template-columns:1fr;} }
+      .folder{
+        background:var(--card); border:1px solid var(--line); border-radius:18px;
+        padding:14px; text-align:left; color:var(--text); width:100%;
+        display:flex; flex-direction:column; gap:0; min-height:0;
+      }
+      .folder:active{transform:scale(.985);}
+      .folder .fh{display:flex; align-items:center; gap:9px; margin-bottom:9px;}
+      .folder .fname{font-weight:600; font-size:14.5px; line-height:1.25; overflow:hidden;
+        display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;}
+      .folder .famt{font-size:19px; font-weight:700; letter-spacing:-.01em;}
+      .folder .fsub{color:var(--muted); font-size:12px; margin-top:2px; line-height:1.4;}
+      .folder .fbar{margin-top:10px;}
+      .folder .fmeta{display:flex; justify-content:space-between; gap:8px; font-size:11.5px; color:var(--faint); margin-top:7px;}
+      .folder .live{margin-top:9px; font-size:11.5px; color:#f0938d; display:flex; align-items:center; gap:6px;
+        font-variant-numeric:tabular-nums;}
+      .live .dot{width:6px;height:6px;border-radius:50%;background:var(--red); flex:none; animation:pulse 2.4s infinite;}
+      @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+      @media (prefers-reduced-motion: reduce){ .live .dot{animation:none;} }
+      .badge{display:inline-block; font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:99px;
+        background:rgba(52,168,83,.16); color:var(--green-t);}
+      .badge.warn{background:rgba(249,171,0,.15); color:var(--amber);}
+      .badge.grey{background:var(--chip); color:var(--muted);}
 
-    /* ---------- Calendar ---------- */
-    .cal-note { margin: 8px 0 0; font-size: 13px; color: var(--dim); }
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-top: 12px; }
-    .cal-wd { padding: 4px 0; text-align: center; font-size: 11px; color: var(--dim); }
-    .day { border: 0; border-radius: 12px; background: transparent; color: var(--text); padding: 6px 1px 5px; display: flex; flex-direction: column; align-items: center; gap: 1px; min-height: 52px; }
-    .day .dnum { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font-size: 14px; }
-    .day.today .dnum { background: var(--accent); color: #fff; font-weight: 500; }
-    @media (prefers-color-scheme: dark) { .day.today .dnum { color: #202124; } }
-    .day.selected { background: var(--accent-soft); }
-    .day .damt { font-size: 10px; font-weight: 500; color: var(--green-dark); line-height: 1.1; }
-    .day .dcheck { font-size: 9px; color: var(--green); line-height: 1; }
-    .day-detail { margin-top: 14px; }
-    .day-detail-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-    .day-detail-head strong { font-size: 15px; font-weight: 500; }
-    .day-detail-head span { font-size: 13px; color: var(--dim); }
-    .pay-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-    .pay-item:last-of-type { border-bottom: 0; }
-    .pay-item .who { min-width: 0; }
-    .pay-item .who strong { display: block; font-size: 14px; font-weight: 500; }
-    .pay-item .who span { display: block; font-size: 12px; color: var(--dim); }
-    .pay-item .amt { margin-left: auto; font-size: 14px; font-weight: 500; white-space: nowrap; }
-    .icon-btn { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; border: 0; background: transparent; color: var(--dim); display: grid; place-items: center; font-size: 15px; }
-    .icon-btn:active { background: var(--surface2); }
-    .add-day-btn { width: 100%; margin-top: 10px; border: 0; border-radius: 999px; background: var(--accent-soft); color: var(--accent); padding: 11px; font-size: 14px; font-weight: 500; }
-    .month-total-line { margin: 12px 0 0; text-align: center; font-size: 13px; color: var(--dim); }
-    .none-note { margin: 10px 0 0; font-size: 13px; color: var(--dim); }
+      .empty{
+        background:var(--card); border:1px dashed var(--line); border-radius:16px;
+        padding:22px 16px; text-align:center; color:var(--muted); font-size:14px;
+      }
 
-    /* ---------- Forms ---------- */
-    .form-panel { margin-top: 12px; border-radius: var(--radius); background: var(--surface2); padding: 16px; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; }
-    .form-grid .wide { grid-column: 1 / -1; }
-    .field label { display: block; margin-bottom: 6px; font-size: 11px; font-weight: 500; letter-spacing: .03em; text-transform: uppercase; color: var(--dim); }
-    .field input, .field select {
-      width: 100%; border: 1px solid var(--border); border-radius: 12px;
-      background: var(--surface); color: var(--text); padding: 10px 12px; outline: none;
-    }
-    .field input:focus, .field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-    .btn-primary { border: 0; border-radius: 999px; background: var(--accent); color: #fff; padding: 11px 18px; font-size: 14px; font-weight: 500; white-space: nowrap; }
-    @media (prefers-color-scheme: dark) { .btn-primary { color: #202124; } }
-    .btn-primary:active { transform: scale(.98); }
-    .btn-danger { border: 1px solid var(--border); border-radius: 999px; background: transparent; color: var(--red); padding: 8px 14px; font-size: 13px; font-weight: 500; }
-    .btn-danger.armed { background: var(--red); border-color: var(--red); color: #fff; }
-    .form-error { display: none; margin: 10px 0 0; font-size: 13px; font-weight: 500; color: var(--red); }
-    .form-note { margin: 10px 0 0; font-size: 12px; color: var(--dim); }
+      /* ---------- FAB ---------- */
+      .fab{
+        position:fixed; left:50%; transform:translateX(-50%);
+        bottom:86px; z-index:30;
+        background:var(--blue); color:#fff; border:0; border-radius:999px;
+        padding:0 22px; height:50px; font-size:15.5px; font-weight:600;
+        display:flex; align-items:center; gap:7px; box-shadow:var(--shadow);
+      }
+      .fab:active{background:var(--blue-d);}
 
-    /* ---------- Tick list ---------- */
-    .tick-summary { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-    .tick-count { font-size: 14px; font-weight: 500; margin-right: 4px; }
-    .chip { border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 700; }
-    .chip.diya { background: var(--green-soft); color: var(--green-dark); }
-    .chip.baki { background: var(--red-soft); color: var(--red); }
-    .tick-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
-    .tick-row:last-child { border-bottom: 0; }
-    .avatar { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 16px; font-weight: 500; }
-    .tick-row .who { min-width: 0; }
-    .tick-row .who strong { display: block; font-size: 14px; font-weight: 500; }
-    .tick-row .who span { display: block; font-size: 12px; color: var(--dim); }
-    .tick-row.done .who span { color: var(--green-dark); }
-    .tick-row .amt { margin-left: auto; font-size: 15px; font-weight: 500; white-space: nowrap; }
-    .tick-btn { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--border); background: transparent; color: var(--dim); font-size: 16px; display: grid; place-items: center; }
-    .tick-btn.done { background: var(--green); border-color: var(--green); color: #fff; }
+      /* ---------- bottom nav ---------- */
+      .tabbar{
+        position:fixed; left:0; right:0; bottom:0; z-index:40;
+        background:var(--bg2); border-top:1px solid var(--line);
+        padding-bottom:env(safe-area-inset-bottom);
+      }
+      .tabbar .in{max-width:560px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr 1fr;}
+      .tab{
+        background:none; border:0; color:var(--muted); padding:8px 4px 9px;
+        display:flex; flex-direction:column; align-items:center; gap:3px; font-size:12px; min-height:58px;
+      }
+      .tab .pill{width:52px; height:28px; border-radius:99px; display:flex; align-items:center; justify-content:center;}
+      .tab.on{color:var(--text); font-weight:600;}
+      .tab.on .pill{background:rgba(26,115,232,.28);}
+      .tab .av{width:26px;height:26px;font-size:10px;}
 
-    /* ---------- Monthly list ---------- */
-    .month-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); }
-    .month-row:last-child { border-bottom: 0; }
-    .month-row strong { display: block; font-size: 15px; font-weight: 500; }
-    .month-row span { display: block; font-size: 12px; color: var(--dim); margin-top: 1px; }
-    .month-row b { font-size: 17px; font-weight: 500; white-space: nowrap; }
+      /* ---------- views ---------- */
+      .view{display:none;}
+      .view.on{display:block;}
 
-    /* ---------- Saare karz ---------- */
-    .add-loan-btn { border: 0; border-radius: 999px; background: var(--accent-soft); color: var(--accent); padding: 9px 16px; font-size: 13px; font-weight: 500; white-space: nowrap; }
-    .loan-row-head { width: 100%; display: flex; align-items: center; gap: 12px; padding: 14px 0; border: 0; border-bottom: 1px solid var(--border); background: transparent; color: var(--text); text-align: left; }
-    .loan-main { flex: 1; min-width: 0; }
-    .loan-main strong { display: block; font-size: 15px; font-weight: 500; }
-    .loan-main span { display: block; font-size: 12.5px; color: var(--dim); margin-top: 1px; }
-    .loan-main .live-line { color: var(--green-dark); font-weight: 500; }
-    .loan-right { text-align: right; flex: 0 0 auto; }
-    .loan-right strong { display: block; font-size: 19px; font-weight: 500; white-space: nowrap; }
-    .loan-right span { display: block; font-size: 12px; color: var(--dim); margin-top: 1px; }
-    .loan-detail { padding: 2px 0 16px 52px; border-bottom: 1px solid var(--border); }
-    .tranche-block { border-radius: 16px; background: var(--surface2); padding: 14px; margin-bottom: 10px; }
-    .tranche-block:last-child { margin-bottom: 0; }
-    .tranche-title { margin: 0 0 8px; font-size: 13px; font-weight: 500; color: var(--dim); }
-    .amount-line { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 5px 0; font-size: 13px; }
-    .amount-line span { color: var(--dim); }
-    .amount-line strong { font-weight: 500; white-space: nowrap; }
-    .amount-line.hl strong { color: var(--red); }
-    .amount-line.ok strong { color: var(--green-dark); }
-    .progress-track { height: 6px; margin-top: 10px; border-radius: 99px; background: var(--border); overflow: hidden; }
-    .progress-fill { height: 100%; border-radius: 99px; background: var(--accent); transition: width .4s ease; }
-    .progress-copy { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; font-size: 11.5px; color: var(--dim); }
-    .progress-copy b { color: var(--accent); }
-    .pay-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; margin-top: 12px; }
-    .pay-form .btn-primary { grid-column: 1 / -1; }
-    .pay-history { margin-top: 12px; }
-    .pay-history h3 { margin: 0 0 4px; font-size: 11px; font-weight: 500; letter-spacing: .03em; text-transform: uppercase; color: var(--dim); }
-    .hist-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px dashed var(--border); font-size: 13px; }
-    .hist-row:last-child { border-bottom: 0; }
-    .hist-row .split { display: block; font-size: 11.5px; color: var(--dim); }
-    .hist-row .hamt { display: flex; align-items: center; gap: 6px; font-weight: 500; color: var(--green-dark); white-space: nowrap; }
-    .card-actions { display: flex; justify-content: flex-end; margin-top: 10px; }
-    .emi-badge { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; border-radius: 999px; background: var(--green-soft); color: var(--green-dark); padding: 5px 11px; font-size: 12.5px; font-weight: 500; }
-    .empty-state { padding: 22px 0; text-align: center; color: var(--dim); font-size: 14px; }
+      /* ---------- detail ---------- */
+      .dhead{display:flex; align-items:center; gap:12px; padding:14px 0 6px;}
+      .iconbtn{
+        width:42px; height:42px; flex:none; border-radius:50%; border:0;
+        background:var(--card2); color:var(--text);
+        display:flex; align-items:center; justify-content:center;
+      }
+      .dhead .who{display:flex; align-items:center; gap:11px; min-width:0;}
+      .dhead .who .n{font-size:18px; font-weight:700; line-height:1.2;}
+      .dhead .who .s{color:var(--muted); font-size:12.5px;}
+      .paybtn{
+        width:100%; background:var(--blue); color:#fff; border:0; border-radius:999px;
+        height:52px; font-size:16.5px; font-weight:600; margin:14px 0 20px;
+        display:flex; align-items:center; justify-content:center; gap:8px;
+      }
+      .paybtn:active{background:var(--blue-d);}
+      .paybtn.done{background:var(--green);}
+      h3.dsec{font-size:16.5px; font-weight:600; margin:22px 0 6px;}
+      .kv{display:flex; justify-content:space-between; gap:16px; padding:11px 0; border-bottom:1px solid var(--line); font-size:14.5px;}
+      .kv span{color:var(--muted);}
+      .kv b{font-weight:600; text-align:right; font-variant-numeric:tabular-nums;}
+      .kv:last-child{border-bottom:0;}
 
-    .footer-tip { margin: 36px 0 0; font-size: 13px; color: var(--dim); }
+      .livepanel{
+        background:var(--card); border:1px solid var(--line); border-radius:18px;
+        padding:16px 18px; margin-top:14px;
+      }
+      .livepanel .lt{color:#f0938d; font-size:13.5px; display:flex; align-items:center; gap:7px;}
+      .livepanel .lv{font-size:30px; font-weight:700; margin:4px 0 3px; font-variant-numeric:tabular-nums; letter-spacing:-.01em;}
+      .livepanel .ls{color:var(--muted); font-size:12.5px; line-height:1.5;}
 
-    @media (max-width: 520px) {
-      .page { padding: 24px 16px 72px; }
-      .hero-total { font-size: 37px; }
-      .big-rate, .big-value { font-size: 32px; }
-      .loan-detail { padding-left: 0; }
-      .month-label { min-width: 118px; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .live-dot, .tick-anim { animation: none; }
-      .progress-fill { transition: none; }
-      .btn-primary:active { transform: none; }
-    }
-  </style>
-</head>
-<body>
-  <main class="page">
+      .part{
+        background:var(--card); border:1px solid var(--line); border-radius:18px;
+        padding:15px 16px; margin-top:12px;
+      }
+      .part .ph{display:flex; align-items:flex-start; gap:11px;}
+      .part .num{
+        width:30px;height:30px; flex:none; border-radius:50%; background:var(--card2);
+        color:#8ab4f8; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600;
+      }
+      .part .pa{font-size:17px; font-weight:700;}
+      .part .pd{color:var(--muted); font-size:12.5px;}
+      .part .del{margin-left:auto; background:none; border:0; color:#f0938d; font-size:13.5px; padding:6px 8px; min-height:36px;}
+      .part .prow{display:flex; justify-content:space-between; gap:12px; font-size:13px; padding:6px 0 0; color:var(--muted);}
+      .part .prow b{color:var(--text); font-weight:600; font-variant-numeric:tabular-nums;}
+      .part .plive{margin-top:8px; font-size:12.5px; color:#f0938d; display:flex; align-items:center; gap:6px; font-variant-numeric:tabular-nums;}
+      .part .pmark{margin-top:11px; width:100%; background:var(--card2); color:#8ab4f8; border:1px solid var(--line);
+        border-radius:999px; height:42px; font-weight:600; font-size:14px;}
+      .ghostbtn{
+        width:100%; background:none; border:1px solid var(--line); color:#8ab4f8;
+        border-radius:999px; height:48px; font-size:15px; margin-top:14px;
+      }
+      .dangerlink{display:block; margin:26px auto 4px; background:none; border:0; color:#f0938d; font-size:14.5px; padding:10px 16px;}
+      .note{color:var(--faint); font-size:12.5px; margin-top:6px; line-height:1.5;}
 
-    <!-- Hero -->
-    <section class="hero" aria-label="Kul baki karz — live">
-      <p class="hero-label">Kul baki — interest mila ke total
-        <span class="live-pill"><span class="live-dot" aria-hidden="true"></span>LIVE</span>
-      </p>
-      <h1 class="hero-total tnum" id="grandTotal">₹0</h1>
-      <p class="hero-per tnum" id="heroPer">Har second +₹0.0000 badh raha hai</p>
-      <p class="hero-sub tnum" id="heroSub">Principal ₹0 + byaaj ₹0 · 0 karz chal rahe hain</p>
-    </section>
+      .payitem{display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid var(--line);}
+      .payitem:last-child{border-bottom:0;}
+      .payitem .ck{width:30px;height:30px;flex:none;border-radius:50%;background:rgba(52,168,83,.18);color:var(--green-t);
+        display:flex;align-items:center;justify-content:center;}
+      .payitem .pa2{font-weight:600; font-variant-numeric:tabular-nums;}
+      .payitem .pd2{color:var(--muted); font-size:12.5px;}
+      .payitem .undo{margin-left:auto; background:none; border:0; color:#f0938d; font-size:13px; padding:6px 8px; min-height:36px;}
 
-    <!-- Live byaaj -->
-    <section class="panel-live" aria-label="Live byaaj — har second kitna badh raha hai">
-      <p class="panel-head"><span class="live-dot" aria-hidden="true"></span>LIVE — byaaj abhi, isi pal badh raha hai</p>
-      <p class="rate-label">Har second itna badh raha hai</p>
-      <p class="big-rate tnum"><span id="rateSecondBig">+₹0.0000</span><span class="per"> /second</span></p>
-      <div class="rate-boxes tnum">
-        <div class="rate-box"><span>Har minute</span><strong id="rateMinute">+₹0.00</strong></div>
-        <div class="rate-box"><span>Har ghanta</span><strong id="rateHour">+₹0.00</strong></div>
-        <div class="rate-box"><span>Har din</span><strong id="rateDay">+₹0.00</strong></div>
-      </div>
-      <p class="session-line tnum">Page khulne ke baad ab tak <strong id="sessionGain">+₹0.0000</strong> aur badh gaya</p>
-      <div class="divider" aria-hidden="true"></div>
-      <p class="perloan-label">Kis karz ka kitna — har second</p>
-      <div id="perLoanList"></div>
-    </section>
+      /* ---------- sheet ---------- */
+      .scrim{
+        position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:50;
+        opacity:0; pointer-events:none; transition:opacity .25s ease;
+      }
+      .scrim.on{opacity:1; pointer-events:auto;}
+      .sheet{
+        position:fixed; left:0; right:0; bottom:0; z-index:60;
+        background:var(--sheet); border-radius:24px 24px 0 0;
+        max-height:88vh; overflow-y:auto; overscroll-behavior:contain;
+        transform:translateY(105%); transition:transform .3s cubic-bezier(.32,.72,.24,1);
+        padding-bottom:env(safe-area-inset-bottom);
+      }
+      .sheet.on{transform:translateY(0);}
+      @media (prefers-reduced-motion: reduce){ .sheet,.scrim{transition:none;} }
+      .sheet .in{max-width:560px; margin:0 auto; padding:10px 18px 26px;}
+      .grab{width:38px; height:4px; border-radius:99px; background:var(--line); margin:4px auto 12px;}
+      .sheet h3{font-size:18px; font-weight:700; margin:0 0 4px;}
+      .sheet .sub{color:var(--muted); font-size:13px; margin-bottom:8px;}
+      .sheet .close-x{float:right;}
 
-    <!-- Ab tak byaaj -->
-    <section class="panel-amber" aria-label="Ab tak byaaj kitna hua — live">
-      <p class="panel-head"><span class="live-dot" aria-hidden="true"></span>Ab tak byaaj — baki (interest mila ke dena hai) · LIVE</p>
-      <p class="big-value tnum" id="interestBig">₹0</p>
-      <p class="sub tnum" id="interestSub">—</p>
-    </section>
+      .up-item{display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid var(--line);}
+      .up-item:last-of-type{border-bottom:0;}
+      .up-item .n{font-weight:600; font-size:14.5px;}
+      .up-item .d{color:var(--muted); font-size:12.5px;}
+      .up-item .a{margin-left:auto; color:var(--amber); font-weight:700; font-variant-numeric:tabular-nums;}
 
-    <!-- Hisaab tiles -->
-    <section class="tiles" aria-label="Hisaab ek nazar me">
-      <div class="tile red">
-        <p class="t-label">Kitna pay karna hai — total</p>
-        <p class="t-value tnum" id="tileTotal">—</p>
-        <p class="t-sub tnum" id="tileTotalSub">—</p>
-      </div>
-      <div class="tile amber">
-        <p class="t-label">Byaaj (interest)</p>
-        <p class="t-value tnum"><span id="tileByaj">—</span><span class="unit"> /mahina</span></p>
-        <p class="t-sub tnum" id="tileByajSub">—</p>
-      </div>
-      <div class="tile green">
-        <p class="t-label">Kitna pay kiya</p>
-        <p class="t-value tnum" id="tilePaid">—</p>
-        <p class="t-sub">Saari payments mila kar, ab tak</p>
-      </div>
-      <div class="tile blue">
-        <p class="t-label">Har mahine ka bojh</p>
-        <p class="t-value tnum" id="tileBojh">—</p>
-        <p class="t-sub tnum" id="tileBojhSub">—</p>
-      </div>
-    </section>
+      /* calendar */
+      .cal{margin-top:16px; background:var(--card); border:1px solid var(--line); border-radius:18px; padding:14px 12px 10px;}
+      .cal .ch{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; padding:0 4px;}
+      .cal .ch .m{font-weight:700; font-size:15.5px;}
+      .cal .nav{width:38px;height:38px;border-radius:50%;border:0;background:none;color:#8ab4f8;font-size:19px;}
+      .cal table{width:100%; border-collapse:collapse; table-layout:fixed;}
+      .cal th{color:var(--faint); font-size:11.5px; font-weight:500; padding:5px 0;}
+      .cal td{text-align:center; padding:3px 0; vertical-align:top;}
+      .cal .day{
+        width:34px; height:34px; margin:0 auto; border-radius:50%;
+        display:flex; align-items:center; justify-content:center; font-size:13.5px; position:relative;
+      }
+      .cal .day.today{font-weight:800;}
+      .cal .day.paid{border:2px solid var(--green); color:var(--green-t); font-weight:700;}
+      .cal .pamt{font-size:9.5px; color:var(--green-t); margin-top:1px; font-variant-numeric:tabular-nums; line-height:1.1;}
+      .cal .legend{color:var(--faint); font-size:12px; text-align:center; padding:10px 6px 4px; line-height:1.5;}
 
-    <!-- Calendar -->
-    <section class="section" aria-label="Payment calendar">
-      <div class="sec-head">
-        <h2>Calendar</h2>
-        <div class="month-nav">
-          <button class="nav-btn" type="button" id="calPrev" aria-label="Pichhla mahina">‹</button>
-          <p class="month-label" id="calLabel">—</p>
-          <button class="nav-btn" type="button" id="calNext" aria-label="Agla mahina">›</button>
+      /* forms */
+      .field{margin-top:13px;}
+      .field label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px;}
+      .field input,.field select{
+        width:100%; background:var(--card2); border:1px solid var(--line); color:var(--text);
+        border-radius:12px; padding:12px 14px; font-size:15px; outline:0; min-height:48px;
+      }
+      .field input:focus,.field select:focus{border-color:var(--blue);}
+      .btnrow{display:flex; gap:10px; margin-top:18px;}
+      .btnrow button{flex:1; border-radius:999px; height:50px; font-size:15px; font-weight:600; border:0;}
+      .btn-cancel{background:var(--card2); color:var(--text);}
+      .btn-go{background:var(--blue); color:#fff;}
+      .btn-danger{background:#5f2120; color:#f6c9c7;}
+      .confirmbox{border:1px solid rgba(229,72,77,.5); border-radius:16px; padding:14px; margin-top:16px; font-size:14px;}
+
+      /* you view */
+      .profile{display:flex; align-items:center; gap:14px; background:var(--card); border:1px solid var(--line);
+        border-radius:20px; padding:18px; margin-top:14px;}
+      .profile .n{font-size:18px; font-weight:700;}
+      .profile .s{color:var(--muted); font-size:13px;}
+      .statgrid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;}
+      .stat{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px;}
+      .stat .v{font-size:20px; font-weight:700; font-variant-numeric:tabular-nums;}
+      .stat .l{color:var(--muted); font-size:12px; margin-top:2px;}
+    </style>
+  </head>
+  <body>
+    <!-- ================= HOME ================= -->
+    <section class="view on" id="view-home">
+      <div class="wrap">
+        <div class="topbar">
+          <label class="search">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
+            <input id="search" type="search" placeholder="Lender ke naam se search karein" autocomplete="off" />
+          </label>
+          <div class="avatar" style="background:#7b1fa2" aria-hidden="true">M</div>
         </div>
-      </div>
-      <p class="cal-note">Jis din paisa diya, us din ke neeche rakam dikhegi. Din par tap karke us din ki payment dekhein ya nayi jodein.</p>
-      <div class="cal-grid" id="calGrid"></div>
-      <div class="day-detail" id="dayDetail"></div>
-      <p class="month-total-line tnum" id="calMonthTotal"></p>
-    </section>
 
-    <!-- Is Mahine Ki List -->
-    <section class="section" aria-label="Is mahine ki list">
-      <h2 style="margin:0;font-size:18px;font-weight:500;">Is Mahine Ki List</h2>
-      <p class="sec-sub" id="tickSub">—</p>
-      <div class="tick-summary" id="tickSummary"></div>
-      <div id="tickList"></div>
-    </section>
-
-    <!-- Har Mahine Kitna Diya -->
-    <section class="section" aria-label="Har mahine kitna diya">
-      <h2 style="margin:0;font-size:18px;font-weight:500;">Har Mahine Kitna Diya</h2>
-      <div id="monthList"></div>
-      <p class="none-note" id="monthEmpty">No payments recorded yet.</p>
-    </section>
-
-    <!-- Saare Karz -->
-    <section class="section" aria-label="Saare karz">
-      <div class="sec-head">
-        <h2>Saare Karz</h2>
-        <button class="add-loan-btn" type="button" id="toggleLoanForm">+ Naya karz</button>
-      </div>
-      <form class="form-panel" id="loanForm" novalidate hidden>
-        <div class="form-grid">
-          <div class="field wide">
-            <label for="fName">Lender name</label>
-            <input id="fName" type="text" placeholder="e.g. Ramesh" autocomplete="off" />
-          </div>
-          <div class="field">
-            <label for="fAmount">Amount taken (₹)</label>
-            <input id="fAmount" type="number" inputmode="decimal" min="0" step="any" placeholder="50,000" />
-          </div>
-          <div class="field">
-            <label for="fRate">Interest % / month</label>
-            <input id="fRate" type="number" inputmode="decimal" min="0" step="any" placeholder="3" />
-          </div>
-          <div class="field">
-            <label for="fDate">Date taken</label>
-            <input id="fDate" type="date" />
-          </div>
-          <button class="btn-primary" type="submit" style="width:100%;">Add loan</button>
+        <div class="banner" aria-hidden="true">
+          <svg viewBox="0 0 560 150" role="img" aria-label="">
+            <rect width="560" height="150" fill="#101623"/>
+            <path d="M0 96 Q140 60 300 84 T560 78 V150 H0 Z" fill="#173d27"/>
+            <path d="M0 116 Q180 88 340 104 T560 100 V150 H0 Z" fill="#1d5233"/>
+            <g fill="#f9ab00" opacity=".85">
+              <rect x="26" y="34" width="5" height="5" rx="1"/><rect x="40" y="34" width="5" height="5" rx="1"/>
+              <rect x="26" y="46" width="5" height="5" rx="1"/><rect x="498" y="40" width="5" height="5" rx="1"/>
+              <rect x="512" y="40" width="5" height="5" rx="1"/><rect x="505" y="52" width="5" height="5" rx="1"/>
+            </g>
+            <g>
+              <rect x="14" y="52" width="46" height="34" rx="2" fill="#2e7d4f"/>
+              <rect x="486" y="56" width="40" height="30" rx="2" fill="#33404f"/>
+              <g fill="#8ab4f8"><rect x="494" y="63" width="6" height="6"/><rect x="506" y="63" width="6" height="6"/><rect x="494" y="73" width="6" height="6"/></g>
+            </g>
+            <g transform="translate(88,58)">
+              <rect x="0" y="14" width="52" height="26" fill="#3f9e63"/>
+              <path d="M-4 14 L26 0 L56 14 Z" fill="#57b877"/>
+              <rect x="9" y="20" width="7" height="14" fill="#12251c"/><rect x="22" y="20" width="7" height="14" fill="#12251c"/><rect x="35" y="20" width="7" height="14" fill="#12251c"/>
+              <rect x="23" y="4" width="6" height="10" fill="#57b877"/>
+            </g>
+            <g transform="translate(428,84)">
+              <rect x="0" y="0" width="52" height="7" rx="3" fill="#1a73e8"/>
+              <rect x="4" y="7" width="44" height="20" rx="3" fill="#f9ab00"/>
+              <circle cx="14" cy="32" r="5" fill="#0b0b0f" stroke="#f9ab00" stroke-width="2"/>
+              <circle cx="40" cy="32" r="5" fill="#0b0b0f" stroke="#f9ab00" stroke-width="2"/>
+              <circle cx="63" cy="10" r="6" fill="#f2c9a0"/><path d="M57 16 q6 14 0 22 l12 0 q-5-9 0-22 Z" fill="#4fc3f7"/>
+              <circle cx="82" cy="8" r="6" fill="#c68e5e"/><path d="M76 14 q7 16 1 26 l11 0 q-4-12 0-26 Z" fill="#8ab4f8"/>
+            </g>
+            <g fill="#2e7d4f"><path d="M52 118 q4-10 10 0 q-6 4-10 0Z"/><path d="M356 122 q4-10 10 0 q-6 4-10 0Z"/><path d="M238 126 q4-10 10 0 q-6 4-10 0Z"/></g>
+          </svg>
         </div>
-        <p class="form-error" id="loanError"></p>
-        <p class="form-note">Interest 0% bhi chalega — bina byaaj wale karz ke liye 0 daalein.</p>
-      </form>
-      <div id="loanList"></div>
-      <div class="empty-state" id="emptyState" hidden>
-        <strong style="display:block;color:var(--text);font-size:15px;margin-bottom:4px;">No loans yet</strong>
-        Upar "+ Naya karz" se pehla karz add karein.
+
+        <div class="summary">
+          <div class="lbl">Kul Baki — sab loan milakar</div>
+          <div class="big" id="sum-baki">₹0</div>
+          <div class="bar"><i id="sum-bar" style="width:0%"></i></div>
+          <div class="row">
+            <span>Ab tak diya: <b id="sum-diya">₹0</b></span>
+            <span>Kul tha: <b id="sum-kul">₹0</b></span>
+          </div>
+        </div>
+
+        <button class="upcoming-btn" id="btn-upcoming" type="button">
+          <span class="ic">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#f9ab00" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+          </span>
+          <span>
+            <span class="t1">Aane wali kist</span>
+            <span class="t2" id="up-sub" style="display:block">Calendar bhi yahi khulega</span>
+          </span>
+          <span class="amt"><span class="a" id="up-amt">₹0</span><span class="d" id="up-date" style="display:block"></span></span>
+          <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+
+        <div class="sec-head">
+          <h2>Mere loan folder</h2>
+          <span class="cnt" id="folder-count"></span>
+        </div>
+        <div class="grid" id="grid-home"></div>
+        <div class="empty" id="grid-home-empty" hidden>Is naam ka koi folder nahi mila.</div>
       </div>
     </section>
 
-    <p class="footer-tip">Salary ~₹23,000 · pehle tick list clear karo, phir bache paiso se sabse mehenga (zyada byaaj wala) karz ghatao.</p>
-  </main>
+    <!-- ================= MONEY ================= -->
+    <section class="view" id="view-money">
+      <div class="wrap">
+        <div class="sec-head" style="margin-top:18px">
+          <h2>Money — saara hisaab</h2>
+        </div>
+        <div class="summary">
+          <div class="lbl">Kul Baki — sab loan milakar</div>
+          <div class="big" id="money-baki">₹0</div>
+          <div class="bar"><i id="money-bar" style="width:0%"></i></div>
+          <div class="row">
+            <span>Ab tak diya: <b id="money-diya">₹0</b></span>
+            <span>Kul tha: <b id="money-kul">₹0</b></span>
+          </div>
+        </div>
+        <div class="statgrid">
+          <div class="stat"><div class="v" id="st-folders">0</div><div class="l">Loan folder</div></div>
+          <div class="stat"><div class="v" id="st-paidcnt">0</div><div class="l">Payment mark hui</div></div>
+          <div class="stat"><div class="v" id="st-interest">0</div><div class="l">Byaaj wale loan</div></div>
+          <div class="stat"><div class="v" id="st-free">0</div><div class="l">Bina byaaj wale</div></div>
+        </div>
+        <div class="sec-head"><h2>Sab folder</h2></div>
+        <div class="grid" id="grid-money"></div>
+      </div>
+    </section>
 
-  <script>
-    (function () {
-      'use strict';
+    <!-- ================= YOU ================= -->
+    <section class="view" id="view-you">
+      <div class="wrap">
+        <div class="profile">
+          <div class="avatar lg" style="background:#7b1fa2">MK</div>
+          <div>
+            <div class="n">Manish Kumar</div>
+            <div class="s">Loan Tracker — apna personal khata</div>
+          </div>
+        </div>
+        <div class="statgrid">
+          <div class="stat"><div class="v" id="you-baki">₹0</div><div class="l">Kul baki</div></div>
+          <div class="stat"><div class="v" id="you-diya">₹0</div><div class="l">Ab tak diya</div></div>
+        </div>
+        <h3 class="dsec">Dhyaan dein</h3>
+        <p class="note">Ye page Chrome me khulne wala static page hai. Isme mark ki gayi payment sirf is khule hue page tak rehti hai — page band ya refresh karne par hisaab wapas asal rakam par aa jata hai. Asal record ke liye payment ki date aur rakam apne paas note kar lein.</p>
+        <p class="note">Byaaj ka hisaab 30-din ke mahine se lagbhag (approximate) hai.</p>
+      </div>
+    </section>
 
-      var MONTH_SECONDS = 30.4375 * 24 * 60 * 60; // average month
-      var AV_COLORS = ['#1a73e8', '#188038', '#b06000', '#d93025', '#9334e6', '#e37400', '#00838f', '#5f6368'];
+    <!-- ================= DETAIL ================= -->
+    <section class="view" id="view-detail">
+      <div class="wrap" id="detail-wrap"></div>
+    </section>
 
-      // Manish ke asal karz — hisse alag-alag, jaise liye the.
+    <button class="fab" id="fab-add" type="button">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      Naya Loan
+    </button>
+
+    <nav class="tabbar" aria-label="Main">
+      <div class="in">
+        <button class="tab on" data-tab="home" type="button">
+          <span class="pill"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9h13v-9"/></svg></span>
+          Home
+        </button>
+        <button class="tab" data-tab="money" type="button">
+          <span class="pill"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 9.2h7M8.5 12h7M9.8 9.2c2.8.5 4 1.5 4 2.8s-1.2 2.3-4 2.8L13 18" stroke-linecap="round"/></svg></span>
+          Money
+        </button>
+        <button class="tab" data-tab="you" type="button">
+          <span class="pill"><span class="avatar av" style="background:#7b1fa2">M</span></span>
+          You
+        </button>
+      </div>
+    </nav>
+
+    <!-- ================= SHEET ================= -->
+    <div class="scrim" id="scrim"></div>
+    <div class="sheet" id="sheet" role="dialog" aria-modal="true">
+      <div class="in" id="sheet-in"></div>
+    </div>
+
+    <script>
+    (function(){
+      "use strict";
+      var INR = function(n){
+        n = Math.round(n);
+        return "₹" + n.toLocaleString("en-IN");
+      };
+      var INR4 = function(n){
+        return "₹" + n.toLocaleString("en-IN",{minimumFractionDigits:2, maximumFractionDigits:4});
+      };
+      var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+      var MONTHS_S = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      function dstr(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+      function parseD(s){ var p=s.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
+      function fmtD(s){
+        if(!s) return "";
+        var d = parseD(s);
+        return d.getDate()+" "+MONTHS_S[d.getMonth()]+" "+d.getFullYear();
+      }
+      function daysBetween(a,b){ return Math.round((b-a)/86400000); }
+      function initials(name){
+        var w = name.replace(/[^A-Za-z ]/g,"").trim().split(/\s+/);
+        if(w.length===1) return w[0].charAt(0).toUpperCase();
+        return (w[0].charAt(0)+w[1].charAt(0)).toUpperCase();
+      }
+      function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+
+      /* ---------------- DATA (11 Nov 2026 ke hisaab se) ---------------- */
       var loans = [
-        { id: 1,  name: 'Jagdeva',           principal: 35000, rate: 3, borrowed: '2025-11-09' },
-        { id: 2,  name: 'Jagdeva',           principal: 25000, rate: 3, borrowed: '2025-11-28' },
-        { id: 3,  name: 'Jagdeva',           principal: 40000, rate: 3, borrowed: '2025-12-16' },
-        { id: 4,  name: 'Shanker',           principal: 30000, rate: 5, borrowed: '2025-11-05' },
-        { id: 5,  name: 'Rajia Madam',       principal: 25000, rate: 5, borrowed: '2025-10-10' },
-        { id: 6,  name: 'Lalo',              principal: 10000, rate: 5, borrowed: '2025-11-01' },
-        { id: 7,  name: 'Rajendra Hardware', principal: 8000,  rate: 0, borrowed: '2026-10-02' },
-        { id: 8,  name: 'Mahatma',           principal: 9000,  rate: 0, borrowed: '2026-10-02' },
-        { id: 9,  name: 'Bala',              principal: 5000,  rate: 0, borrowed: '2026-10-02' },
-        { id: 10, name: 'Light Bill',        principal: 5000,  rate: 0, borrowed: '2026-10-02' },
-        { id: 11, name: 'Poka',              principal: 2000,  rate: 0, borrowed: '2026-10-02' }
+        { id:"jagdeva", name:"Jagdeva", color:"#7cb342", type:"interest", principal:100000, totalDue:100000,
+          rate:3, startDate:"2025-11-09",
+          parts:[
+            { id:"j1", amount:35000, date:"2025-11-09" },
+            { id:"j2", amount:25000, date:"2025-11-28" },
+            { id:"j3", amount:40000, date:"2025-12-16" }
+          ],
+          payments:[] },
+        { id:"mummy", name:"Mummy ka Loan", color:"#009688", type:"emi", principal:67830, totalDue:67830,
+          rate:0, emi:3230, emiTotal:21, emiPaid:0, dueDay:2, payments:[] },
+        { id:"mummy-naya", name:"Mummy ka Naya Loan", color:"#673ab7", type:"emi", principal:48000, totalDue:62540,
+          rate:0, emi:1180, emiTotal:53, emiPaid:0, dueDay:null, freq:"har 14 din", payments:[] },
+        { id:"rajia", name:"Rajia Madam", color:"#78909c", type:"interest", principal:25000, totalDue:40000,
+          rate:5, startDate:null, note:"Kul dena andaza hai", payments:[] },
+        { id:"shanker", name:"Shanker", color:"#f4511e", type:"interest", principal:30000, totalDue:33030,
+          rate:5, startDate:null, payments:[] },
+        { id:"bajaj", name:"Bajaj Finance", color:"#d81b60", type:"emi", principal:10999, totalDue:10999,
+          rate:0, emi:2200, emiTotal:5, emiPaid:0, dueDay:2, payments:[] },
+        { id:"lalo", name:"Lalo", color:"#8e24aa", type:"interest", principal:10000, totalDue:10000,
+          rate:0, startDate:null, note:"Byaaj maaf — sirf principal", payments:[] },
+        { id:"mahatma", name:"Mahatma", color:"#7b1fa2", type:"interest", principal:9000, totalDue:9000,
+          rate:0, startDate:null, payments:[] },
+        { id:"rajendra", name:"Rajendra Hardware", color:"#1e88e5", type:"interest", principal:8000, totalDue:8000,
+          rate:0, startDate:null, payments:[] },
+        { id:"lightbill", name:"Light Bill", color:"#7cb342", type:"interest", principal:5000, totalDue:5000,
+          rate:0, startDate:null, payments:[] },
+        { id:"bala", name:"Bala", color:"#00897b", type:"interest", principal:5000, totalDue:5000,
+          rate:0, startDate:null, payments:[] },
+        { id:"poka", name:"Poka", color:"#fb8c00", type:"interest", principal:2000, totalDue:2000,
+          rate:0, startDate:null, payments:[] }
       ];
-      var payments = [
-        // Shanker ka byaaj ₹15,000 dekar clear kiya tha — 4 Sept 2026.
-        { id: 101, loanId: 4, amount: 15000, date: '2026-09-04' },
-        // Jagdeva ko ₹3,000 byaaj November 2026 me diya (2 tarikh ko).
-        { id: 102, loanId: 1, amount: 3000, date: '2026-11-02' }
-      ];
-      // EMI wale karz — dono ki kist har mahine ki 2 tarikh ko jati hai.
-      // basePaid = ab tak di gayi kistein (emiPayments se gin kar milti hain).
-      var emis = [
-        { name: 'Mummy ka Loan', detail: 'Loan ₹60,000 · haath me ₹57,000 mile the', emi: 3230, borrowed: 60000, totalKists: 24, basePaid: 3 },
-        { name: 'Bajaj Finance', detail: 'Kist har mahine ki 2 tarikh ko', emi: 2200, borrowed: 22000, totalKists: 10, basePaid: 5, leftOverride: 10999 }
-      ];
-      var emiPayments = [
-        { name: 'Bajaj Finance', amount: 2200, date: '2026-07-02' },
-        { name: 'Bajaj Finance', amount: 2200, date: '2026-08-02' },
-        { name: 'Mummy ka Loan', amount: 3230, date: '2026-09-02' },
-        { name: 'Bajaj Finance', amount: 2200, date: '2026-09-02' },
-        { name: 'Mummy ka Loan', amount: 3230, date: '2026-10-02' },
-        { name: 'Bajaj Finance', amount: 2200, date: '2026-10-02' },
-        { name: 'Mummy ka Loan', amount: 3230, date: '2026-11-02' },
-        { name: 'Bajaj Finance', amount: 2200, date: '2026-11-02' }
-      ];
-      var seq = 200;
-      var openGroups = {};   // lender name -> detail khula hai ya nahi
-      var calCursor = null;  // calendar ka mahina {y, m}
-      var selectedDate = null;
-      var loadTotal = null;  // page khulne par kul total — session gain ke liye
 
-      var $ = function (id) { return document.getElementById(id); };
+      var pageOpenTime = Date.now();
+      var currentLoanId = null;
+      var currentTab = "home";
+      var searchQ = "";
+      var calCursor = null; /* Date for calendar month */
+      var confirmState = null; /* {kind, loanId, partId} */
 
-      function money(value, decimals) {
-        return new Intl.NumberFormat('en-IN', {
-          style: 'currency', currency: 'INR',
-          minimumFractionDigits: decimals || 0,
-          maximumFractionDigits: decimals || 0
-        }).format(Math.max(0, value || 0));
+      function loanById(id){ for(var i=0;i<loans.length;i++) if(loans[i].id===id) return loans[i]; return null; }
+      function paidOf(l){ var s=0; for(var i=0;i<l.payments.length;i++) s+=l.payments[i].amount; return s; }
+      function paidOfPart(l,pid){ var s=0; for(var i=0;i<l.payments.length;i++) if(l.payments[i].partId===pid) s+=l.payments[i].amount; return s; }
+      function monthlyInterest(amount, rate){ return amount * rate / 100; }
+      function perSecond(amount, rate){ return monthlyInterest(amount, rate) / (30*24*3600); }
+      function accrued(amount, rate, fromStr){
+        if(!rate || !fromStr) return 0;
+        var days = daysBetween(parseD(fromStr), new Date());
+        if(days<0) days=0;
+        return monthlyInterest(amount, rate) * (days/30);
       }
-      // Bade number ke liye: integer bada, fraction chhota (original jaisa)
-      function moneyHtml(value) {
-        var s = money(value, 2);
-        var dot = s.lastIndexOf('.');
-        if (dot === -1) return s;
-        return s.slice(0, dot) + '<span class="frac">' + s.slice(dot) + '</span>';
+      function loanAccrued(l){
+        if(l.parts && l.parts.length){
+          var s=0; for(var i=0;i<l.parts.length;i++) s+=accrued(l.parts[i].amount, l.rate, l.parts[i].date);
+          return s;
+        }
+        return accrued(l.principal, l.rate, l.startDate);
       }
-      function parseDay(str) {
-        if (!str) return null;
-        var p = str.split('-').map(Number);
-        return new Date(p[0], p[1] - 1, p[2], 0, 0, 0, 0);
+      function totals(){
+        var kul=0, diya=0;
+        for(var i=0;i<loans.length;i++){ kul+=loans[i].totalDue; diya+=paidOf(loans[i]); }
+        return { kul:kul, diya:diya, baki:kul-diya };
       }
-      function todayStr() {
-        var d = new Date();
-        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      function nextDue(l){
+        if(l.type!=="emi" || !l.dueDay) return null;
+        if(l.emiPaid + countEmiPayments(l) >= l.emiTotal) return null;
+        var now = new Date(); now.setHours(0,0,0,0);
+        var d = new Date(now.getFullYear(), now.getMonth(), l.dueDay);
+        if(d < now) d = new Date(now.getFullYear(), now.getMonth()+1, l.dueDay);
+        return d;
       }
-      function fmtDate(str) {
-        var d = parseDay(str);
-        if (!d) return '—';
-        return new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }).format(d);
+      function countEmiPayments(l){
+        var c=0; for(var i=0;i<l.payments.length;i++) if(l.payments[i].isEmi) c++;
+        return c;
       }
-      function fmtDayShort(str) {
-        var d = parseDay(str);
-        if (!d) return '—';
-        return new Intl.DateTimeFormat('en-IN', { weekday: 'short', day: 'numeric', month: 'short' }).format(d);
+      function upcoming(){
+        var out=[];
+        for(var i=0;i<loans.length;i++){
+          var d = nextDue(loans[i]);
+          if(d) out.push({ loan:loans[i], date:d, amount:loans[i].emi });
+        }
+        out.sort(function(a,b){ return a.date-b.date; });
+        return out;
       }
-      function fmtMonth(key) {
-        var p = key.split('-').map(Number);
-        return new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numeric' }).format(new Date(p[0], p[1] - 1, 1));
-      }
-      function avatarColor(name) {
-        var h = 0;
-        for (var i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-        return AV_COLORS[h % AV_COLORS.length];
-      }
-      function avatarHtml(name, size) {
-        var s = size || 40;
-        return '<span class="avatar" style="background:' + avatarColor(name) + ';width:' + s + 'px;height:' + s + 'px;font-size:' + Math.round(s * 0.4) + 'px;">' + name.charAt(0).toUpperCase() + '</span>';
-      }
-      function esc(s) {
-        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      function subText(l){
+        if(l.type==="emi"){
+          var paid = l.emiPaid + countEmiPayments(l);
+          var s = "Kist "+INR(l.emi)+" · "+(l.freq? l.freq : "har mahine")+" · "+paid+"/"+l.emiTotal+" kist di";
+          if(!l.dueDay) s += " · date decide nahi hui";
+          return s;
+        }
+        if(l.rate>0){
+          var mi = monthlyInterest(l.principal, l.rate);
+          return "Byaaj "+l.rate+"% · "+INR(mi)+" mahina";
+        }
+        return "Byaaj nahi hai · sirf principal";
       }
 
-      /* ---------- Interest calculation (pehle jaisa hi) ---------- */
-      // Walk a loan's payments in date order, accruing simple interest on the
-      // outstanding principal. Returns the full picture at time `now`.
-      function calcLoan(loan, now) {
-        var start = parseDay(loan.borrowed);
-        var principalLeft = loan.principal;
-        var accrued = 0;
-        var interestPaid = 0;
-        var principalPaid = 0;
-        var last = start.getTime();
-        var monthlyRate = loan.rate / 100;
+      /* ---------------- RENDER: folders ---------------- */
+      function folderHTML(l){
+        var paid = paidOf(l), baki = l.totalDue - paid;
+        var pct = l.totalDue>0 ? Math.min(100, paid/l.totalDue*100) : 0;
+        var live = "";
+        if(l.rate>0){
+          live = '<div class="live"><span class="dot"></span><span>Live byaaj: <span class="live-val" data-live-loan="'+l.id+'">₹0.0000</span></span></div>';
+        }
+        var badge = "";
+        if(baki<=0) badge = ' <span class="badge">Poora diya ✓</span>';
+        else if(l.type==="emi" && !l.dueDay) badge = ' <span class="badge warn">Date decide nahi</span>';
+        return '<button class="folder" type="button" data-open="'+l.id+'">'
+          + '<span class="fh"><span class="avatar sm" style="background:'+l.color+'">'+initials(l.name)+'</span>'
+          + '<span class="fname">'+esc(l.name)+badge+'</span></span>'
+          + '<span class="famt">'+INR(Math.max(0,baki))+'</span>'
+          + '<span class="fsub">'+esc(subText(l))+'</span>'
+          + '<span class="bar fbar"><i style="width:'+pct+'%"></i></span>'
+          + '<span class="fmeta"><span>baki</span><span>'+INR(paid)+' diya</span></span>'
+          + live
+          + '</button>';
+      }
+      function renderGrids(){
+        var q = searchQ.trim().toLowerCase();
+        var list = loans.filter(function(l){ return !q || l.name.toLowerCase().indexOf(q)>=0; });
+        document.getElementById("grid-home").innerHTML = list.map(folderHTML).join("");
+        document.getElementById("grid-home-empty").hidden = list.length>0;
+        document.getElementById("grid-money").innerHTML = loans.map(folderHTML).join("");
+        document.getElementById("folder-count").textContent = loans.length + " folder";
+        bindFolderClicks();
+        tickLive();
+      }
+      function bindFolderClicks(){
+        var btns = document.querySelectorAll("[data-open]");
+        for(var i=0;i<btns.length;i++){
+          btns[i].addEventListener("click", function(){ openDetail(this.getAttribute("data-open")); });
+        }
+      }
+      function renderSummary(){
+        var t = totals();
+        var pct = t.kul>0 ? (t.diya/t.kul*100) : 0;
+        document.getElementById("sum-baki").textContent = INR(t.baki);
+        document.getElementById("sum-diya").textContent = INR(t.diya);
+        document.getElementById("sum-kul").textContent = INR(t.kul);
+        document.getElementById("sum-bar").style.width = pct+"%";
+        document.getElementById("money-baki").textContent = INR(t.baki);
+        document.getElementById("money-diya").textContent = INR(t.diya);
+        document.getElementById("money-kul").textContent = INR(t.kul);
+        document.getElementById("money-bar").style.width = pct+"%";
+        document.getElementById("you-baki").textContent = INR(t.baki);
+        document.getElementById("you-diya").textContent = INR(t.diya);
+        var pc=0, ic=0, fc=0;
+        for(var i=0;i<loans.length;i++){ pc+=loans[i].payments.length; if(loans[i].rate>0) ic++; else fc++; }
+        document.getElementById("st-folders").textContent = loans.length;
+        document.getElementById("st-paidcnt").textContent = pc;
+        document.getElementById("st-interest").textContent = ic;
+        document.getElementById("st-free").textContent = fc;
+        var up = upcoming();
+        if(up.length){
+          var totalNext = 0; for(var j=0;j<up.length;j++) if(up[j].date.getTime()===up[0].date.getTime()) totalNext+=up[j].amount;
+          document.getElementById("up-amt").textContent = INR(totalNext);
+          var dd = daysBetween(new Date(new Date().setHours(0,0,0,0)), up[0].date);
+          document.getElementById("up-date").textContent = fmtD(dstr(up[0].date)) + (dd===0 ? " · aaj" : " · "+dd+" din me");
+          document.getElementById("up-sub").textContent = up.length + " kist aane wali hai — tap karein";
+        } else {
+          document.getElementById("up-amt").textContent = "—";
+          document.getElementById("up-date").textContent = "";
+          document.getElementById("up-sub").textContent = "Abhi koi kist due nahi hai";
+        }
+      }
+      function renderAll(){ renderSummary(); renderGrids(); }
 
-        var mine = payments.filter(function (p) { return p.loanId === loan.id; })
-          .slice().sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : a.id - b.id; });
+      /* ---------------- LIVE BYAAJ (har 1 second) ---------------- */
+      function tickLive(){
+        var secs = (Date.now()-pageOpenTime)/1000;
+        var nodes = document.querySelectorAll("[data-live-loan]");
+        for(var i=0;i<nodes.length;i++){
+          var l = loanById(nodes[i].getAttribute("data-live-loan"));
+          if(l) nodes[i].textContent = INR4(perSecond(l.principal, l.rate) * secs);
+        }
+        var big = document.querySelectorAll("[data-live-big]");
+        for(var j=0;j<big.length;j++){
+          var l2 = loanById(big[j].getAttribute("data-live-big"));
+          if(l2) big[j].textContent = INR4(perSecond(l2.principal, l2.rate) * secs);
+        }
+        var pn = document.querySelectorAll("[data-live-part]");
+        for(var k=0;k<pn.length;k++){
+          var parts = pn[k].getAttribute("data-live-part").split(":");
+          var l3 = loanById(parts[0]);
+          if(l3){ for(var m=0;m<l3.parts.length;m++) if(l3.parts[m].id===parts[1]){
+            pn[k].textContent = INR4(perSecond(l3.parts[m].amount, l3.rate) * secs);
+          }}
+        }
+      }
+      setInterval(tickLive, 1000);
 
-        var splits = {};
-        mine.forEach(function (p) {
-          var t = Math.min(parseDay(p.date).getTime(), now.getTime());
-          if (t > last) {
-            accrued += principalLeft * monthlyRate * ((t - last) / 1000) / MONTH_SECONDS;
-            last = t;
-          }
-          var due = Math.max(0, accrued - interestPaid);
-          var toInterest = Math.min(p.amount, due);
-          var toPrincipal = Math.min(p.amount - toInterest, principalLeft);
-          interestPaid += toInterest;
-          principalPaid += toPrincipal;
-          principalLeft -= toPrincipal;
-          splits[p.id] = { toInterest: toInterest, toPrincipal: toPrincipal };
+      /* ---------------- VIEWS / TABS ---------------- */
+      function showView(name){
+        var views = ["home","money","you","detail"];
+        for(var i=0;i<views.length;i++){
+          document.getElementById("view-"+views[i]).classList.toggle("on", views[i]===name);
+        }
+        document.getElementById("fab-add").style.display = (name==="detail") ? "none" : "";
+        var tabs = document.querySelectorAll(".tab");
+        for(var j=0;j<tabs.length;j++){
+          var t = tabs[j].getAttribute("data-tab");
+          tabs[j].classList.toggle("on", t===name || (name==="detail" && t===currentTab));
+        }
+        window.scrollTo(0,0);
+      }
+      var tabBtns = document.querySelectorAll(".tab");
+      for(var ti=0; ti<tabBtns.length; ti++){
+        tabBtns[ti].addEventListener("click", function(){
+          currentTab = this.getAttribute("data-tab");
+          currentLoanId = null;
+          showView(currentTab);
         });
+      }
+      document.getElementById("search").addEventListener("input", function(){
+        searchQ = this.value; renderGrids();
+      });
 
-        if (now.getTime() > last) {
-          accrued += principalLeft * monthlyRate * ((now.getTime() - last) / 1000) / MONTH_SECONDS;
+      /* ---------------- DETAIL ---------------- */
+      function openDetail(id){
+        currentLoanId = id;
+        renderDetail();
+        showView("detail");
+      }
+      function renderDetail(){
+        var l = loanById(currentLoanId);
+        if(!l){ showView("home"); return; }
+        var paid = paidOf(l), baki = l.totalDue - paid;
+        var h = "";
+        h += '<div class="dhead">'
+          + '<button class="iconbtn" id="d-back" type="button" aria-label="Peeche">'
+          + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m14.5 5.5-6 6.5 6 6.5"/></svg></button>'
+          + '<span class="who"><span class="avatar lg" style="background:'+l.color+'">'+initials(l.name)+'</span>'
+          + '<span><span class="n">'+esc(l.name)+'</span><br><span class="s">'+esc(subText(l))+'</span></span></span></div>';
+
+        if(baki>0){
+          h += '<button class="paybtn" id="d-pay" type="button">'
+            + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>'
+            + 'Payment Mark Karein</button>';
+        } else {
+          h += '<button class="paybtn done" id="d-pay" type="button" disabled>Poora payment ho gaya ✓</button>';
         }
 
-        var interestDue = Math.max(0, accrued - interestPaid);
-        return {
-          principalLeft: principalLeft,
-          principalPaid: principalPaid,
-          interestAccrued: accrued,
-          interestPaid: interestPaid,
-          interestDue: interestDue,
-          totalDue: principalLeft + interestDue,
-          perSecond: principalLeft * monthlyRate / MONTH_SECONDS,
-          splits: splits
-        };
-      }
+        h += '<h3 class="dsec">Detail</h3>';
+        h += '<div class="kv"><span>Principal</span><b>'+INR(l.principal)+'</b></div>';
+        h += '<div class="kv"><span>Kul dena tha</span><b>'+INR(l.totalDue)+'</b></div>';
+        h += '<div class="kv"><span>Ab tak diya</span><b>'+INR(paid)+'</b></div>';
+        h += '<div class="kv"><span>Baki</span><b>'+INR(Math.max(0,baki))+'</b></div>';
+        if(l.rate>0){
+          h += '<div class="kv"><span>Byaaj</span><b>'+l.rate+'% har mahina</b></div>';
+          h += '<div class="kv"><span>Byaaj ki rakam (har mahina)</span><b>'+INR(monthlyInterest(l.principal, l.rate))+'</b></div>';
+          var acc = loanAccrued(l);
+          if(acc>0) h += '<div class="kv"><span>Ab tak ka byaaj (lagbhag)</span><b>'+INR(acc)+'</b></div>';
+        } else if(l.type!=="emi"){
+          h += '<div class="kv"><span>Byaaj</span><b>Nahi hai — sirf principal</b></div>';
+        }
+        if(l.type==="emi"){
+          var ep = l.emiPaid + countEmiPayments(l);
+          h += '<div class="kv"><span>Kist</span><b>'+INR(l.emi)+' · '+(l.freq? l.freq : "har mahine")+'</b></div>';
+          h += '<div class="kv"><span>Kist di</span><b>'+ep+' / '+l.emiTotal+'</b></div>';
+          var nd = nextDue(l);
+          if(nd) h += '<div class="kv"><span>Agli kist</span><b>'+fmtD(dstr(nd))+'</b></div>';
+          else if(!l.dueDay) h += '<div class="kv"><span>Agli kist</span><b>Date decide nahi hui</b></div>';
+        }
+        if(l.note) h += '<p class="note">'+esc(l.note)+'</p>';
 
-      /* ---------- Grouping by lender ---------- */
-      function loanGroups(calcs) {
-        var order = [], byName = {};
-        loans.forEach(function (loan) {
-          if (!byName[loan.name]) {
-            byName[loan.name] = { name: loan.name, rate: loan.rate, tranches: [], principalOrig: 0, principalLeft: 0, interestDue: 0, paidTotal: 0, perSecond: 0, monthlyLabel: 0, firstDate: loan.borrowed };
-            order.push(byName[loan.name]);
+        if(l.rate>0){
+          var ps = perSecond(l.principal, l.rate);
+          h += '<div class="livepanel"><div class="lt"><span class="dot" style="width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block"></span>Live byaaj badh raha hai</div>'
+            + '<div class="lv" data-live-big="'+l.id+'">₹0.0000</div>'
+            + '<div class="ls">Page khulne ke baad itna byaaj aur badha · rate '+INR4(ps).replace("₹","₹")+'/second · '
+            + INR(monthlyInterest(l.principal,l.rate)/30)+'/din · '+INR(monthlyInterest(l.principal,l.rate))+'/mahina</div></div>';
+        }
+
+        /* parts */
+        if(l.parts && l.parts.length){
+          h += '<h3 class="dsec">Loan ke hisse</h3>';
+          h += '<p class="note" style="margin-top:0">Ye loan itni baar me liya gaya tha — har hisse ka byaaj alag chalta hai, payment bhi alag mark hoti hai:</p>';
+          var ptotal = 0;
+          for(var i=0;i<l.parts.length;i++){
+            var p = l.parts[i]; ptotal += p.amount;
+            var pp = paidOfPart(l, p.id);
+            var pmi = monthlyInterest(p.amount, l.rate);
+            var pacc = accrued(p.amount, l.rate, p.date);
+            h += '<div class="part"><div class="ph"><span class="num">'+(i+1)+'</span>'
+              + '<span><span class="pa">'+INR(p.amount)+'</span><br><span class="pd">'+fmtD(p.date)+' ko liya</span></span>'
+              + '<button class="del" type="button" data-del-part="'+p.id+'">Hatayein</button></div>'
+              + '<div class="prow"><span>Byaaj '+l.rate+'% · har mahina</span><b>'+INR(pmi)+'</b></div>'
+              + '<div class="prow"><span>Us date se ab tak ka byaaj (lagbhag)</span><b>'+INR(pacc)+'</b></div>'
+              + '<div class="prow"><span>Is hisse par diya</span><b>'+INR(pp)+'</b></div>'
+              + '<div class="prow"><span>Is hisse ka baki</span><b>'+INR(Math.max(0, p.amount - pp))+'</b></div>'
+              + '<div class="plive"><span class="dot" style="width:6px;height:6px;border-radius:50%;background:var(--red);display:inline-block"></span>Live byaaj: <span data-live-part="'+l.id+':'+p.id+'">₹0.0000</span></div>'
+              + (pp < p.amount ? '<button class="pmark" type="button" data-pay-part="'+p.id+'">Is hisse ki payment mark karein</button>' : '<div class="prow"><span></span><b style="color:var(--green-t)">Hissa poora ✓</b></div>')
+              + '</div>';
           }
-          var g = byName[loan.name];
-          var c = calcs[loan.id];
-          g.tranches.push(loan);
-          g.principalOrig += loan.principal;
-          g.principalLeft += c.principalLeft;
-          g.interestDue += c.interestDue;
-          g.paidTotal += c.principalPaid + c.interestPaid;
-          g.perSecond += c.perSecond;
-          g.monthlyLabel += loan.principal * loan.rate / 100;
-          if (loan.borrowed < g.firstDate) g.firstDate = loan.borrowed;
+          h += '<p class="note">Hisson ka kul: <b style="color:var(--text)">'+INR(ptotal)+'</b> · Kul byaaj: <b style="color:var(--text)">'+INR(monthlyInterest(ptotal, l.rate))+' mahina</b></p>';
+        }
+        h += '<button class="ghostbtn" id="d-addpart" type="button">+ Naya Hissa Jodein</button>';
+
+        /* payments */
+        h += '<h3 class="dsec">Kab-kab diya</h3>';
+        if(l.payments.length===0){
+          h += '<div class="empty">Abhi koi payment mark nahi hai. Paisa dene par upar wale button se yahi se mark karein.</div>';
+        } else {
+          var sorted = l.payments.slice().sort(function(a,b){ return a.date<b.date?1:-1; });
+          for(var k=0;k<sorted.length;k++){
+            var pay = sorted[k];
+            var plabel = "";
+            if(pay.partId && l.parts){ for(var m=0;m<l.parts.length;m++) if(l.parts[m].id===pay.partId) plabel = " · Hissa "+(m+1); }
+            h += '<div class="payitem"><span class="ck"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg></span>'
+              + '<span><span class="pa2">'+INR(pay.amount)+'</span><br><span class="pd2">'+fmtD(pay.date)+plabel+(pay.isEmi?" · Kist":"")+'</span></span>'
+              + '<button class="undo" type="button" data-undo-pay="'+pay.id+'">Hatayein</button></div>';
+          }
+        }
+
+        if(confirmState && confirmState.kind==="loan" && confirmState.loanId===l.id){
+          h += '<div class="confirmbox">Ye folder aur iski saari payment hamesha ke liye hat jayegi. Pakka?'
+            + '<div class="btnrow"><button class="btn-cancel" id="cf-no" type="button">Nahi</button>'
+            + '<button class="btn-danger" id="cf-yes-loan" type="button">Haan, hatayein</button></div></div>';
+        } else {
+          h += '<button class="dangerlink" id="d-del" type="button">Ye loan folder hatayein</button>';
+        }
+        if(confirmState && confirmState.kind==="part"){
+          h += '<div class="confirmbox">Ye hissa hat jayega. Is hisse par mark ki gayi payment poore loan ki payment ban jayegi — payment delete nahi hogi. Pakka?'
+            + '<div class="btnrow"><button class="btn-cancel" id="cf-no" type="button">Nahi</button>'
+            + '<button class="btn-danger" id="cf-yes-part" type="button">Haan, hatayein</button></div></div>';
+        }
+
+        document.getElementById("detail-wrap").innerHTML = h;
+
+        document.getElementById("d-back").addEventListener("click", function(){ showView(currentTab); });
+        var payBtn = document.getElementById("d-pay");
+        if(payBtn && !payBtn.disabled) payBtn.addEventListener("click", function(){ openPaySheet(l.id, null); });
+        document.getElementById("d-addpart").addEventListener("click", function(){ openPartSheet(l.id); });
+        var delBtn = document.getElementById("d-del");
+        if(delBtn) delBtn.addEventListener("click", function(){ confirmState={kind:"loan", loanId:l.id}; renderDetail(); window.scrollTo(0, document.body.scrollHeight); });
+
+        var dps = document.querySelectorAll("[data-del-part]");
+        for(var a=0;a<dps.length;a++) dps[a].addEventListener("click", function(){
+          confirmState={kind:"part", loanId:l.id, partId:this.getAttribute("data-del-part")};
+          renderDetail(); window.scrollTo(0, document.body.scrollHeight);
         });
-        return order;
+        var pps = document.querySelectorAll("[data-pay-part]");
+        for(var b=0;b<pps.length;b++) pps[b].addEventListener("click", function(){ openPaySheet(l.id, this.getAttribute("data-pay-part")); });
+        var ups = document.querySelectorAll("[data-undo-pay]");
+        for(var c=0;c<ups.length;c++) ups[c].addEventListener("click", function(){
+          var pid = this.getAttribute("data-undo-pay");
+          l.payments = l.payments.filter(function(x){ return x.id!==pid; });
+          renderAll(); renderDetail(); tickLive();
+        });
+        var cfNo = document.getElementById("cf-no");
+        if(cfNo) cfNo.addEventListener("click", function(){ confirmState=null; renderDetail(); });
+        var cfLoan = document.getElementById("cf-yes-loan");
+        if(cfLoan) cfLoan.addEventListener("click", function(){
+          loans = loans.filter(function(x){ return x.id!==l.id; });
+          confirmState=null; currentLoanId=null; renderAll(); showView(currentTab);
+        });
+        var cfPart = document.getElementById("cf-yes-part");
+        if(cfPart) cfPart.addEventListener("click", function(){
+          var pid2 = confirmState.partId;
+          for(var z=0;z<l.payments.length;z++) if(l.payments[z].partId===pid2) l.payments[z].partId=null;
+          l.parts = l.parts.filter(function(x){ return x.id!==pid2; });
+          var nt = 0; for(var y=0;y<l.parts.length;y++) nt+=l.parts[y].amount;
+          if(l.parts.length){ l.principal = nt; }
+          confirmState=null; renderAll(); renderDetail(); tickLive();
+        });
+        tickLive();
       }
 
-      /* ---------- EMI helpers ---------- */
-      function emiPaidCount(e) {
-        return emiPayments.filter(function (p) { return p.name === e.name; }).length;
+      /* ---------------- SHEETS ---------------- */
+      var sheet = document.getElementById("sheet");
+      var scrim = document.getElementById("scrim");
+      var sheetIn = document.getElementById("sheet-in");
+      function openSheet(html){
+        sheetIn.innerHTML = '<div class="grab"></div>' + html;
+        sheet.classList.add("on"); scrim.classList.add("on");
       }
-      function emiLeft(e) {
-        var count = emiPaidCount(e);
-        if (typeof e.leftOverride === 'number') return Math.max(0, e.leftOverride - (count - e.basePaid) * e.emi);
-        return Math.max(0, (e.totalKists - count) * e.emi);
+      function closeSheet(){
+        sheet.classList.remove("on"); scrim.classList.remove("on");
       }
-      function emiRemaining() { return emis.reduce(function (s, e) { return s + emiLeft(e); }, 0); }
-      function emiPaidTotal() { return emis.reduce(function (s, e) { return s + emiPaidCount(e) * e.emi; }, 0); }
-      function emiMonthlyTotal() { return emis.reduce(function (s, e) { return s + e.emi; }, 0); }
-      function emiLastPayment(e) {
-        var mine = emiPayments.filter(function (p) { return p.name === e.name; });
-        return mine.length ? mine[mine.length - 1] : null;
-      }
+      scrim.addEventListener("click", closeSheet);
 
-      /* ---------- Calendar ---------- */
-      function paymentsByDate() {
+      /* Upcoming + calendar sheet */
+      document.getElementById("btn-upcoming").addEventListener("click", function(){
+        if(!calCursor){ var up0 = upcoming(); var base = up0.length? up0[0].date : new Date(); calCursor = new Date(base.getFullYear(), base.getMonth(), 1); }
+        renderUpcomingSheet();
+      });
+      function paidByDate(){
         var map = {};
-        function add(date, amt) { map[date] = (map[date] || 0) + amt; }
-        payments.forEach(function (p) { add(p.date, p.amount); });
-        emiPayments.forEach(function (p) { add(p.date, p.amount); });
+        for(var i=0;i<loans.length;i++){
+          for(var j=0;j<loans[i].payments.length;j++){
+            var p = loans[i].payments[j];
+            if(!map[p.date]) map[p.date]=0;
+            map[p.date]+=p.amount;
+          }
+        }
         return map;
       }
-      function renderCalendar() {
-        if (!calCursor) {
-          var t = new Date();
-          calCursor = { y: t.getFullYear(), m: t.getMonth() };
-        }
-        if (!selectedDate) selectedDate = todayStr();
-        $('calLabel').textContent = new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numeric' }).format(new Date(calCursor.y, calCursor.m, 1));
-        var byDate = paymentsByDate();
-        var first = new Date(calCursor.y, calCursor.m, 1);
-        var startDay = first.getDay();
-        var daysInMonth = new Date(calCursor.y, calCursor.m + 1, 0).getDate();
-        var today = todayStr();
-        var html = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(function (d) { return '<div class="cal-wd">' + d + '</div>'; }).join('');
-        for (var i = 0; i < startDay; i++) html += '<div></div>';
-        for (var d = 1; d <= daysInMonth; d++) {
-          var ds = calCursor.y + '-' + String(calCursor.m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
-          var amt = byDate[ds];
-          html += '<button type="button" class="day' + (ds === today ? ' today' : '') + (ds === selectedDate ? ' selected' : '') + '" data-date="' + ds + '">' +
-            '<span class="dnum">' + d + '</span>' +
-            (amt ? '<span class="dcheck">✓</span><span class="damt">' + money(amt) + '</span>' : '') +
-            '</button>';
-        }
-        $('calGrid').innerHTML = html;
-        Array.prototype.forEach.call($('calGrid').querySelectorAll('.day'), function (btn) {
-          btn.addEventListener('click', function () { selectedDate = btn.getAttribute('data-date'); renderCalendar(); });
-        });
-
-        // Selected day detail
-        var dayLoans = payments.filter(function (p) { return p.date === selectedDate; });
-        var dayEmis = emiPayments.filter(function (p) { return p.date === selectedDate; });
-        var dayTotal = dayLoans.reduce(function (s, p) { return s + p.amount; }, 0) + dayEmis.reduce(function (s, p) { return s + p.amount; }, 0);
-        var detail = $('dayDetail');
-        var items = '';
-        dayEmis.forEach(function (p, idx) {
-          items += '<div class="pay-item">' + avatarHtml(p.name, 36) +
-            '<div class="who"><strong>' + esc(p.name) + '</strong><span>EMI kist · Monthly tick — ' + fmtMonth(p.date.slice(0, 7)) + '</span></div>' +
-            '<span class="amt tnum">' + money(p.amount) + '</span>' +
-            '<button type="button" class="icon-btn" data-del-emi="' + idx + '" aria-label="Ye EMI payment hatayein">✕</button></div>';
-        });
-        dayLoans.forEach(function (p) {
-          var loan = loans.find(function (l) { return l.id === p.loanId; });
-          var nm = loan ? loan.name : 'Loan';
-          items += '<div class="pay-item">' + avatarHtml(nm, 36) +
-            '<div class="who"><strong>' + esc(nm) + '</strong><span>Payment · ' + (loan ? fmtDate(loan.borrowed) + ' wala karz' : '') + '</span></div>' +
-            '<span class="amt tnum">' + money(p.amount) + '</span>' +
-            '<button type="button" class="icon-btn" data-del-pay="' + p.id + '" aria-label="Ye payment hatayein">✕</button></div>';
-        });
-        var options = loans.map(function (l) {
-          return '<option value="loan:' + l.id + '">' + esc(l.name) + ' · ' + money(l.principal) + ' (' + fmtDate(l.borrowed) + ')</option>';
-        }).join('') + emis.map(function (e) {
-          return '<option value="emi:' + esc(e.name) + '">' + esc(e.name) + ' (EMI)</option>';
-        }).join('');
-        detail.innerHTML =
-          '<div class="day-detail-head"><strong>' + fmtDayShort(selectedDate) + '</strong>' +
-          '<span class="tnum">' + (dayTotal > 0 ? 'Kul diya ' + money(dayTotal) : 'Is din koi payment nahi') + '</span></div>' +
-          items +
-          '<button type="button" class="add-day-btn" id="toggleDayForm">+ Is din payment jodein</button>' +
-          '<form class="form-panel" id="dayForm" hidden style="margin-top:10px;">' +
-            '<div class="form-grid">' +
-              '<div class="field wide"><label for="dLoan">Karz / EMI</label><select id="dLoan">' + options + '</select></div>' +
-              '<div class="field wide"><label for="dAmount">Rakam (₹)</label><input id="dAmount" type="number" inputmode="decimal" min="0" step="any" placeholder="5,000" /></div>' +
-              '<button class="btn-primary wide" type="submit" style="grid-column:1/-1;width:100%;">Payment jodein · ' + fmtDayShort(selectedDate) + '</button>' +
-            '</div>' +
-            '<p class="form-error" id="dayError"></p>' +
-          '</form>';
-
-        detail.querySelector('#toggleDayForm').addEventListener('click', function () {
-          var f = detail.querySelector('#dayForm');
-          f.hidden = !f.hidden;
-          if (!f.hidden) detail.querySelector('#dAmount').focus();
-        });
-        detail.querySelector('#dayForm').addEventListener('submit', function (ev) {
-          ev.preventDefault();
-          var err = detail.querySelector('#dayError');
-          err.style.display = 'none';
-          var amount = parseFloat(detail.querySelector('#dAmount').value);
-          if (!amount || amount <= 0) { err.textContent = 'Sahi rakam daalein.'; err.style.display = 'block'; return; }
-          var val = detail.querySelector('#dLoan').value;
-          if (val.indexOf('emi:') === 0) {
-            emiPayments.push({ name: val.slice(4), amount: amount, date: selectedDate });
-          } else {
-            var loanId = Number(val.slice(5));
-            var loan = loans.find(function (l) { return l.id === loanId; });
-            if (loan && selectedDate < loan.borrowed) { err.textContent = 'Payment ki date karz lene ki date se pehle nahi ho sakti.'; err.style.display = 'block'; return; }
-            payments.push({ id: seq++, loanId: loanId, amount: amount, date: selectedDate });
-          }
-          renderAll();
-        });
-        Array.prototype.forEach.call(detail.querySelectorAll('[data-del-pay]'), function (btn) {
-          btn.addEventListener('click', function () {
-            var pid = Number(btn.getAttribute('data-del-pay'));
-            payments = payments.filter(function (p) { return p.id !== pid; });
-            renderAll();
-          });
-        });
-        Array.prototype.forEach.call(detail.querySelectorAll('[data-del-emi]'), function (btn) {
-          btn.addEventListener('click', function () {
-            var idx = Number(btn.getAttribute('data-del-emi'));
-            var target = dayEmis[idx];
-            var pos = emiPayments.indexOf(target);
-            if (pos !== -1) emiPayments.splice(pos, 1);
-            renderAll();
-          });
-        });
-
-        var key = calCursor.y + '-' + String(calCursor.m + 1).padStart(2, '0');
-        var mTotal = 0, mCount = 0;
-        payments.concat(emiPayments).forEach(function (p) {
-          if (p.date.slice(0, 7) === key) { mTotal += p.amount; mCount += 1; }
-        });
-        $('calMonthTotal').textContent = fmtMonth(key) + ' me kul diya: ' + money(mTotal) + ' · ' + mCount + ' payment';
-      }
-
-      /* ---------- Is Mahine Ki List (tick list) ---------- */
-      function tickItems(nowKey) {
-        var items = [];
-        emis.forEach(function (e) {
-          var mine = emiPayments.filter(function (p) { return p.name === e.name && p.date.slice(0, 7) === nowKey; });
-          items.push({
-            kind: 'emi', name: e.name, amount: e.emi,
-            done: mine.length > 0,
-            paidAmt: mine.reduce(function (s, p) { return s + p.amount; }, 0),
-            doneDate: mine.length ? mine[0].date : null,
-            pendingSub: 'EMI kist · har mahine 2 tarikh ko'
-          });
-        });
-        var calcs = {};
-        loans.forEach(function (l) { calcs[l.id] = calcLoan(l, new Date()); });
-        loanGroups(calcs).forEach(function (g) {
-          if (g.rate <= 0) return;
-          var ids = g.tranches.map(function (t) { return t.id; });
-          var mine = payments.filter(function (p) { return ids.indexOf(p.loanId) !== -1 && p.date.slice(0, 7) === nowKey; });
-          items.push({
-            kind: 'loan', name: g.name, amount: g.monthlyLabel, group: g,
-            done: mine.length > 0,
-            paidAmt: mine.reduce(function (s, p) { return s + p.amount; }, 0),
-            doneDate: mine.length ? mine[0].date : null,
-            pendingSub: 'Byaaj · ' + g.rate + '%/mah · baki ' + money(g.principalLeft)
-          });
-        });
-        return items;
-      }
-      function renderTicks() {
-        var now = new Date();
-        var nowKey = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
-        $('tickSub').textContent = fmtMonth(nowKey) + ' · paisa do, tick lagao';
-        var items = tickItems(nowKey);
-        var doneCount = items.filter(function (i) { return i.done; }).length;
-        var diya = items.reduce(function (s, i) { return s + (i.done ? i.paidAmt : 0); }, 0);
-        var baki = items.reduce(function (s, i) { return s + (i.done ? 0 : i.amount); }, 0);
-        $('tickSummary').innerHTML =
-          '<span class="tick-count">' + doneCount + ' / ' + items.length + ' done</span>' +
-          '<span class="chip diya tnum">' + money(diya) + ' diya</span>' +
-          '<span class="chip baki tnum">' + money(baki) + ' baki</span>';
-        var wrap = $('tickList');
-        wrap.innerHTML = '';
-        items.forEach(function (item) {
-          var row = document.createElement('div');
-          row.className = 'tick-row' + (item.done ? ' done' : '');
-          row.innerHTML = avatarHtml(item.name) +
-            '<div class="who"><strong>' + esc(item.name) + '</strong><span>' +
-              (item.done ? '✓ Diya — ' + fmtDayShort(item.doneDate) : esc(item.pendingSub)) + '</span></div>' +
-            '<span class="amt tnum">' + money(item.amount) + '</span>';
-          var btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'tick-btn' + (item.done ? ' done tick-anim' : '');
-          btn.setAttribute('aria-label', item.done ? item.name + ' ka tick hatayein' : item.name + ' ka paisa diya — tick lagayein');
-          btn.textContent = '✓';
-          btn.addEventListener('click', function () { toggleTick(item, nowKey); });
-          row.appendChild(btn);
-          wrap.appendChild(row);
-        });
-      }
-      function toggleTick(item, nowKey) {
-        var date2 = nowKey + '-02';
-        if (item.kind === 'emi') {
-          if (item.done) {
-            emiPayments = emiPayments.filter(function (p) { return !(p.name === item.name && p.date.slice(0, 7) === nowKey); });
-          } else {
-            emiPayments.push({ name: item.name, amount: item.amount, date: date2 });
-          }
+      function renderUpcomingSheet(){
+        var up = upcoming();
+        var h = '<h3>Aane wali kist</h3><div class="sub">Jo kist aane wali hai, uski list — aur neeche calendar.</div>';
+        if(up.length===0){
+          h += '<div class="empty">Abhi koi kist due nahi hai.</div>';
         } else {
-          var ids = item.group.tranches.map(function (t) { return t.id; });
-          if (item.done) {
-            payments = payments.filter(function (p) { return !(ids.indexOf(p.loanId) !== -1 && p.date.slice(0, 7) === nowKey); });
-          } else {
-            payments.push({ id: seq++, loanId: ids[0], amount: item.amount, date: date2 });
+          for(var i=0;i<up.length;i++){
+            var u = up[i];
+            var dd = daysBetween(new Date(new Date().setHours(0,0,0,0)), u.date);
+            h += '<div class="up-item"><span class="avatar sm" style="background:'+u.loan.color+'">'+initials(u.loan.name)+'</span>'
+              + '<span><span class="n">'+esc(u.loan.name)+'</span><br><span class="d">'+fmtD(dstr(u.date))+' · '+(dd===0?"aaj":dd+" din me")+'</span></span>'
+              + '<span class="a">'+INR(u.amount)+'</span></div>';
           }
         }
-        renderAll();
-      }
-
-      /* ---------- Har Mahine Kitna Diya ---------- */
-      function renderMonthly() {
-        var byMonth = {};
-        payments.forEach(function (p) {
-          var k = p.date.slice(0, 7);
-          if (!byMonth[k]) byMonth[k] = { total: 0, count: 0, emi: 0, loan: 0 };
-          byMonth[k].total += p.amount; byMonth[k].count += 1; byMonth[k].loan += p.amount;
-        });
-        emiPayments.forEach(function (p) {
-          var k = p.date.slice(0, 7);
-          if (!byMonth[k]) byMonth[k] = { total: 0, count: 0, emi: 0, loan: 0 };
-          byMonth[k].total += p.amount; byMonth[k].count += 1; byMonth[k].emi += p.amount;
-        });
-        var keys = Object.keys(byMonth).sort().reverse();
-        $('monthEmpty').style.display = keys.length ? 'none' : 'block';
-        $('monthList').innerHTML = keys.map(function (k) {
-          var m = byMonth[k];
-          var parts = [m.count + (m.count === 1 ? ' payment' : ' payment')];
-          if (m.emi > 0) parts.push('EMI ' + money(m.emi));
-          if (m.loan > 0) parts.push('Byaaj ' + money(m.loan));
-          return '<div class="month-row"><div><strong>' + fmtMonth(k) + '</strong><span>' + parts.join(' · ') + '</span></div><b class="tnum">' + money(m.total) + '</b></div>';
-        }).join('');
-      }
-
-      /* ---------- Saare Karz (grouped loan list) ---------- */
-      function trancheBlock(loan) {
-        var block = document.createElement('div');
-        block.className = 'tranche-block';
-        block.setAttribute('data-loan', loan.id);
-        block.innerHTML =
-          '<p class="tranche-title">' + money(loan.principal) + ' liya · ' + fmtDate(loan.borrowed) + (loans.filter(function (l) { return l.name === loan.name; }).length > 1 ? ' wala hisaa' : '') + '</p>' +
-          '<div class="amount-line"><span>Principal left</span><strong class="tnum" data-role="principal-left">—</strong></div>' +
-          '<div class="amount-line hl"><span>Interest due <small data-role="per-sec"></small></span><strong class="tnum" data-role="interest-due">—</strong></div>' +
-          '<div class="amount-line ok"><span>Total paid on this hisaa</span><strong class="tnum" data-role="paid">—</strong></div>' +
-          '<div class="progress-track"><div class="progress-fill" data-role="fill" style="width:0%"></div></div>' +
-          '<div class="progress-copy"><span data-role="progress-note"></span><b class="tnum" data-role="progress-pct"></b></div>' +
-          '<form class="pay-form" data-role="pay-form">' +
-            '<div class="field"><label>Payment amount (₹)</label><input data-role="pay-amount" type="number" inputmode="decimal" min="0" step="any" placeholder="5,000" /></div>' +
-            '<div class="field"><label>Payment date</label><input data-role="pay-date" type="date" /></div>' +
-            '<button class="btn-primary" type="submit">Add payment</button>' +
-          '</form>' +
-          '<p class="form-error" data-role="pay-error"></p>' +
-          '<div class="pay-history" data-role="history-wrap" hidden><h3>Payments</h3><div data-role="history"></div></div>' +
-          '<div class="card-actions"><button class="btn-danger" type="button" data-role="delete">Delete loan</button></div>';
-
-        block.querySelector('[data-role="pay-date"]').value = todayStr();
-        block.querySelector('[data-role="pay-form"]').addEventListener('submit', function (ev) {
-          ev.preventDefault();
-          var amountInput = block.querySelector('[data-role="pay-amount"]');
-          var dateInput = block.querySelector('[data-role="pay-date"]');
-          var err = block.querySelector('[data-role="pay-error"]');
-          var amount = parseFloat(amountInput.value);
-          var date = dateInput.value;
-          err.style.display = 'none';
-          if (!amount || amount <= 0) { err.textContent = 'Payment ki rakam daalein.'; err.style.display = 'block'; return; }
-          if (!date) { err.textContent = 'Calendar se date chunein.'; err.style.display = 'block'; return; }
-          if (date < loan.borrowed) { err.textContent = 'Payment ki date karz lene ki date se pehle nahi ho sakti.'; err.style.display = 'block'; return; }
-          payments.push({ id: seq++, loanId: loan.id, amount: amount, date: date });
-          renderAll();
-        });
-        var delBtn = block.querySelector('[data-role="delete"]');
-        delBtn.addEventListener('click', function () {
-          if (!delBtn.classList.contains('armed')) {
-            delBtn.classList.add('armed');
-            delBtn.textContent = 'Tap again to delete';
-            setTimeout(function () { delBtn.classList.remove('armed'); delBtn.textContent = 'Delete loan'; }, 3000);
-            return;
+        /* calendar — sirf di gayi payment wali dates, hare ghere ke saath */
+        var pmap = paidByDate();
+        var y = calCursor.getFullYear(), mo = calCursor.getMonth();
+        var first = new Date(y, mo, 1);
+        var startDay = first.getDay();
+        var daysIn = new Date(y, mo+1, 0).getDate();
+        var todayS = dstr(new Date());
+        h += '<div class="cal"><div class="ch">'
+          + '<button class="nav" id="cal-prev" type="button" aria-label="Pichla mahina">‹</button>'
+          + '<span class="m">'+MONTHS[mo]+' '+y+'</span>'
+          + '<button class="nav" id="cal-next" type="button" aria-label="Agla mahina">›</button></div>'
+          + '<table><tr><th>Su</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th></tr>';
+        var cell = 0, day = 1;
+        while(day <= daysIn){
+          h += "<tr>";
+          for(var c=0;c<7;c++){
+            if(cell < startDay || day > daysIn){ h += "<td></td>"; }
+            else {
+              var ds = y+"-"+String(mo+1).padStart(2,"0")+"-"+String(day).padStart(2,"0");
+              var paidAmt = pmap[ds];
+              var cls = "day" + (ds===todayS ? " today" : "") + (paidAmt ? " paid" : "");
+              h += '<td><div class="'+cls+'">'+day+'</div>'
+                + (paidAmt ? '<div class="pamt">'+INR(paidAmt)+'</div>' : '<div class="pamt">&nbsp;</div>')
+                + '</td>';
+              day++;
+            }
+            cell++;
           }
-          loans = loans.filter(function (l) { return l.id !== loan.id; });
-          payments = payments.filter(function (p) { return p.loanId !== loan.id; });
-          renderAll();
-        });
-        return block;
+          h += "</tr>";
+        }
+        h += '</table><div class="legend">Hara ghera = us din payment di gayi hai. Aane wali kist calendar me nahi dikhti — wo upar list me hai.</div></div>';
+        h += '<div class="btnrow"><button class="btn-cancel" id="sheet-close" type="button">Band karein</button></div>';
+        openSheet(h);
+        document.getElementById("cal-prev").addEventListener("click", function(){ calCursor = new Date(y, mo-1, 1); renderUpcomingSheet(); });
+        document.getElementById("cal-next").addEventListener("click", function(){ calCursor = new Date(y, mo+1, 1); renderUpcomingSheet(); });
+        document.getElementById("sheet-close").addEventListener("click", closeSheet);
       }
 
-      function emiBlock(e) {
-        var count = emiPaidCount(e);
-        var left = emiLeft(e);
-        var paidAmt = count * e.emi;
-        var rem = e.totalKists - count;
-        var pct = Math.round(count / e.totalKists * 100);
-        var last = emiLastPayment(e);
-        var wrap = document.createElement('div');
-        wrap.innerHTML =
-          '<div class="amount-line"><span>Kist</span><strong class="tnum">' + money(e.emi) + ' /mahina</strong></div>' +
-          '<div class="amount-line"><span>Kul liya</span><strong class="tnum">' + money(e.borrowed) + '</strong></div>' +
-          '<div class="amount-line ok"><span>Ab tak diya</span><strong class="tnum">' + money(paidAmt) + ' · ' + count + ' kist</strong></div>' +
-          '<div class="amount-line hl"><span>Baki</span><strong class="tnum">' + money(left) + ' · ' + rem + ' kist</strong></div>' +
-          (last ? '<span class="emi-badge">✓ ' + fmtMonth(last.date.slice(0, 7)) + ' ki kist de di · ' + fmtDayShort(last.date) + '</span>' : '') +
-          '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
-          '<div class="progress-copy"><span>' + count + ' of ' + e.totalKists + ' kists</span><b class="tnum">' + pct + '%</b></div>';
-        return wrap;
-      }
-
-      function renderLoans(calcs) {
-        var list = $('loanList');
-        list.innerHTML = '';
-        $('emptyState').hidden = loans.length > 0;
-        var groups = loanGroups(calcs);
-
-        groups.forEach(function (g) {
-          var head = document.createElement('button');
-          head.type = 'button';
-          head.className = 'loan-row-head';
-          head.setAttribute('aria-expanded', openGroups[g.name] ? 'true' : 'false');
-          var lines = '';
-          if (g.rate > 0) {
-            lines = '<span>Byaaj ' + g.rate + '%/mah · har mahine ' + money(g.monthlyLabel) + '</span>' +
-              '<span>' + g.tranches.length + ' hisse me liya · pehla ' + fmtDate(g.firstDate) + '</span>' +
-              '<span class="live-line" data-role="row-live">Live +₹0.0000/sec badh raha hai</span>';
-          } else {
-            lines = '<span>Bina byaaj</span><span>' + fmtDate(g.firstDate) + ' ko liya</span>';
-          }
-          head.innerHTML = avatarHtml(g.name) +
-            '<span class="loan-main"><strong>' + esc(g.name) + '</strong>' + lines + '</span>' +
-            '<span class="loan-right"><strong class="tnum" data-role="row-total">—</strong><span class="tnum" data-role="row-sub"></span></span>';
-          head.setAttribute('data-group', g.name);
-          var detail = document.createElement('div');
-          detail.className = 'loan-detail';
-          detail.hidden = !openGroups[g.name];
-          g.tranches.forEach(function (loan) { detail.appendChild(trancheBlock(loan)); });
-          head.addEventListener('click', function () {
-            openGroups[g.name] = !openGroups[g.name];
-            detail.hidden = !openGroups[g.name];
-            head.setAttribute('aria-expanded', openGroups[g.name] ? 'true' : 'false');
-          });
-          list.appendChild(head);
-          list.appendChild(detail);
-        });
-
-        emis.forEach(function (e) {
-          var key = 'emi:' + e.name;
-          var head = document.createElement('button');
-          head.type = 'button';
-          head.className = 'loan-row-head';
-          head.setAttribute('aria-expanded', openGroups[key] ? 'true' : 'false');
-          head.innerHTML = avatarHtml(e.name) +
-            '<span class="loan-main"><strong>' + esc(e.name) + ' (EMI)</strong>' +
-            '<span>EMI ' + money(e.emi) + '/mah · ' + (e.totalKists - emiPaidCount(e)) + ' kist bachi</span>' +
-            '<span>' + esc(e.detail) + '</span></span>' +
-            '<span class="loan-right"><strong class="tnum">' + money(emiLeft(e)) + '</strong><span class="tnum">kul liya ' + money(e.borrowed) + '</span></span>';
-          var detail = document.createElement('div');
-          detail.className = 'loan-detail';
-          detail.hidden = !openGroups[key];
-          detail.appendChild(emiBlock(e));
-          head.addEventListener('click', function () {
-            openGroups[key] = !openGroups[key];
-            detail.hidden = !openGroups[key];
-            head.setAttribute('aria-expanded', openGroups[key] ? 'true' : 'false');
-          });
-          list.appendChild(head);
-          list.appendChild(detail);
+      /* Payment sheet */
+      function openPaySheet(loanId, partId){
+        var l = loanById(loanId); if(!l) return;
+        var paid = paidOf(l), baki = l.totalDue - paid;
+        var defAmt = l.type==="emi" ? Math.min(l.emi, baki) : baki;
+        var partObj = null;
+        if(partId && l.parts){ for(var i=0;i<l.parts.length;i++) if(l.parts[i].id===partId) partObj = l.parts[i]; }
+        if(partObj) defAmt = Math.max(0, partObj.amount - paidOfPart(l, partId));
+        var h = '<h3>Payment mark karein</h3><div class="sub">'+esc(l.name)+(partObj ? " · Hissa ("+INR(partObj.amount)+")" : "")+' · Baki '+INR(Math.max(0,baki))+'</div>'
+          + '<div class="field"><label>Rakam (₹)</label><input id="pay-amt" type="number" inputmode="numeric" min="1" value="'+defAmt+'"></div>'
+          + '<div class="field"><label>Date</label><input id="pay-date" type="date" value="'+dstr(new Date())+'"></div>'
+          + '<div class="btnrow"><button class="btn-cancel" id="pay-cancel" type="button">Cancel</button>'
+          + '<button class="btn-go" id="pay-save" type="button">Mark karein</button></div>';
+        openSheet(h);
+        document.getElementById("pay-cancel").addEventListener("click", closeSheet);
+        document.getElementById("pay-save").addEventListener("click", function(){
+          var amt = parseInt(document.getElementById("pay-amt").value, 10);
+          var dt = document.getElementById("pay-date").value || dstr(new Date());
+          if(!amt || amt<=0) return;
+          l.payments.push({ id:"p"+Date.now(), amount:amt, date:dt, partId:partId||null, isEmi:(l.type==="emi" && !partId) });
+          closeSheet(); renderAll(); renderDetail(); tickLive();
         });
       }
 
-      function refreshTranche(loan, calc) {
-        var block = document.querySelector('.tranche-block[data-loan="' + loan.id + '"]');
-        if (!block) return;
-        block.querySelector('[data-role="principal-left"]').textContent = money(calc.principalLeft);
-        block.querySelector('[data-role="interest-due"]').textContent = money(calc.interestDue, 2);
-        block.querySelector('[data-role="per-sec"]').textContent = calc.perSecond > 0 ? '· +' + money(calc.perSecond, 4) + '/sec' : '';
-        var paidTotal = calc.principalPaid + calc.interestPaid;
-        block.querySelector('[data-role="paid"]').textContent = money(paidTotal);
-        var totalEver = loan.principal + calc.interestAccrued;
-        var pct = totalEver > 0 ? Math.min(100, paidTotal / totalEver * 100) : 100;
-        block.querySelector('[data-role="fill"]').style.width = pct.toFixed(1) + '%';
-        block.querySelector('[data-role="progress-note"]').textContent = money(paidTotal) + ' paid of ' + money(totalEver) + ' (principal + interest so far)';
-        block.querySelector('[data-role="progress-pct"]').textContent = pct.toFixed(0) + '%';
-
-        var mine = payments.filter(function (p) { return p.loanId === loan.id; })
-          .slice().sort(function (a, b) { return a.date > b.date ? -1 : a.date < b.date ? 1 : b.id - a.id; });
-        var wrap = block.querySelector('[data-role="history-wrap"]');
-        var hist = block.querySelector('[data-role="history"]');
-        wrap.hidden = mine.length === 0;
-        hist.innerHTML = '';
-        mine.forEach(function (p) {
-          var split = calc.splits[p.id] || { toInterest: 0, toPrincipal: 0 };
-          var row = document.createElement('div');
-          row.className = 'hist-row';
-          row.innerHTML = '<span>' + fmtDate(p.date) + '<span class="split">Interest ' + money(split.toInterest) + ' · Principal ' + money(split.toPrincipal) + '</span></span>';
-          var amt = document.createElement('span');
-          amt.className = 'hamt tnum';
-          amt.textContent = money(p.amount);
-          var del = document.createElement('button');
-          del.className = 'icon-btn';
-          del.type = 'button';
-          del.setAttribute('aria-label', 'Remove this payment');
-          del.textContent = '✕';
-          del.addEventListener('click', function () {
-            payments = payments.filter(function (x) { return x.id !== p.id; });
-            renderAll();
-          });
-          amt.appendChild(del);
-          row.appendChild(amt);
-          hist.appendChild(row);
+      /* Add part sheet */
+      function openPartSheet(loanId){
+        var l = loanById(loanId); if(!l) return;
+        var h = '<h3>Naya hissa jodein</h3><div class="sub">'+esc(l.name)+' — naya hissa alag date se jud jayega.</div>'
+          + '<div class="field"><label>Rakam (₹)</label><input id="part-amt" type="number" inputmode="numeric" min="1" placeholder="jaise 10000"></div>'
+          + '<div class="field"><label>Date</label><input id="part-date" type="date" value="'+dstr(new Date())+'"></div>'
+          + '<div class="btnrow"><button class="btn-cancel" id="part-cancel" type="button">Cancel</button>'
+          + '<button class="btn-go" id="part-save" type="button">Jodein</button></div>';
+        openSheet(h);
+        document.getElementById("part-cancel").addEventListener("click", closeSheet);
+        document.getElementById("part-save").addEventListener("click", function(){
+          var amt = parseInt(document.getElementById("part-amt").value, 10);
+          var dt = document.getElementById("part-date").value || dstr(new Date());
+          if(!amt || amt<=0) return;
+          if(!l.parts) l.parts = [];
+          l.parts.push({ id:"pt"+Date.now(), amount:amt, date:dt });
+          l.principal += amt; l.totalDue += amt;
+          if(!l.startDate) l.startDate = dt;
+          closeSheet(); renderAll(); renderDetail(); tickLive();
         });
       }
 
-      /* ---------- Per-loan live rows (hero panel) ---------- */
-      function renderPerLoan(groups) {
-        var wrap = $('perLoanList');
-        wrap.innerHTML = '';
-        groups.filter(function (g) { return g.rate > 0; }).forEach(function (g) {
-          var row = document.createElement('div');
-          row.className = 'perloan-row tnum';
-          row.innerHTML = '<span class="who">' + esc(g.name) + ' <span>· ' + money(g.monthlyLabel) + '/mahina</span></span>' +
-            '<span class="val" data-perloan="' + esc(g.name) + '">+₹0.0000/sec</span>';
-          wrap.appendChild(row);
+      /* Add loan sheet */
+      document.getElementById("fab-add").addEventListener("click", function(){
+        var colors = ["#1e88e5","#009688","#7b1fa2","#f4511e","#7cb342","#d81b60","#fb8c00","#5e35b1"];
+        var h = '<h3>Naya loan folder</h3><div class="sub">Lender ka naam aur rakam bharein.</div>'
+          + '<div class="field"><label>Lender ka naam</label><input id="nl-name" type="text" placeholder="jaise Ramesh"></div>'
+          + '<div class="field"><label>Rakam (₹)</label><input id="nl-amt" type="number" inputmode="numeric" min="1" placeholder="jaise 15000"></div>'
+          + '<div class="field"><label>Byaaj % (har mahina) — nahi hai to 0</label><input id="nl-rate" type="number" inputmode="decimal" min="0" step="0.1" value="0"></div>'
+          + '<div class="field"><label>Lene ki date</label><input id="nl-date" type="date" value="'+dstr(new Date())+'"></div>'
+          + '<div class="btnrow"><button class="btn-cancel" id="nl-cancel" type="button">Cancel</button>'
+          + '<button class="btn-go" id="nl-save" type="button">Folder banayein</button></div>';
+        openSheet(h);
+        document.getElementById("nl-cancel").addEventListener("click", closeSheet);
+        document.getElementById("nl-save").addEventListener("click", function(){
+          var name = document.getElementById("nl-name").value.trim();
+          var amt = parseInt(document.getElementById("nl-amt").value, 10);
+          var rate = parseFloat(document.getElementById("nl-rate").value) || 0;
+          var dt = document.getElementById("nl-date").value || dstr(new Date());
+          if(!name || !amt || amt<=0) return;
+          loans.unshift({ id:"u"+Date.now(), name:name, color:colors[loans.length % colors.length],
+            type:"interest", principal:amt, totalDue:amt, rate:rate, startDate:dt, payments:[] });
+          closeSheet(); renderAll();
         });
-      }
-
-      /* ---------- Live update (har second) ---------- */
-      function updateLive() {
-        var now = new Date();
-        var calcs = {};
-        loans.forEach(function (loan) { calcs[loan.id] = calcLoan(loan, now); });
-        var groups = loanGroups(calcs);
-
-        var principalLeft = 0, interestDue = 0, interestPaid = 0, paidAll = 0, perSecond = 0, monthlyByaj = 0;
-        groups.forEach(function (g) {
-          principalLeft += g.principalLeft;
-          interestDue += g.interestDue;
-          paidAll += g.paidTotal;
-          perSecond += g.perSecond;
-          if (g.rate > 0) monthlyByaj += g.monthlyLabel;
-        });
-        loans.forEach(function (loan) { interestPaid += calcs[loan.id].interestPaid; });
-
-        var emiLeftTotal = emiRemaining();
-        var heroPrincipal = principalLeft + emiLeftTotal;
-        var grandTotal = heroPrincipal + interestDue;
-        var totalPaidAll = paidAll + emiPaidTotal();
-        var karzCount = groups.length + emis.length;
-
-        if (loadTotal === null) loadTotal = grandTotal;
-
-        $('grandTotal').innerHTML = moneyHtml(grandTotal);
-        $('heroPer').textContent = 'Har second +' + money(perSecond, 4) + ' badh raha hai';
-        $('heroSub').textContent = 'Principal ' + money(heroPrincipal) + ' + byaaj ' + money(interestDue) + ' · ' + karzCount + ' karz chal rahe hain';
-        $('rateSecondBig').textContent = '+' + money(perSecond, 4);
-        $('rateMinute').textContent = '+' + money(perSecond * 60, 2);
-        $('rateHour').textContent = '+' + money(perSecond * 3600, 2);
-        $('rateDay').textContent = '+' + money(perSecond * 86400, 2);
-        $('sessionGain').textContent = '+' + money(Math.max(0, grandTotal - loadTotal), 4);
-        $('interestBig').innerHTML = moneyHtml(interestDue);
-        $('interestSub').textContent = 'Har mahine ' + money(monthlyByaj) + ' aur badh raha hai · har second +' + money(perSecond, 4) + ' · ab tak byaaj diya ' + money(interestPaid);
-        $('tileTotal').textContent = money(grandTotal);
-        $('tileTotalSub').textContent = 'Principal ' + money(heroPrincipal) + ' + byaaj ' + money(interestDue);
-        $('tileByaj').textContent = money(monthlyByaj);
-        $('tileByajSub').textContent = 'Ab tak byaaj me diya: ' + money(interestPaid);
-        $('tilePaid').textContent = money(totalPaidAll);
-        $('tileBojh').textContent = money(monthlyByaj + emiMonthlyTotal());
-        $('tileBojhSub').textContent = 'Byaaj ' + money(monthlyByaj) + ' + EMI ' + money(emiMonthlyTotal());
-
-        groups.forEach(function (g) {
-          var val = document.querySelector('[data-perloan="' + g.name + '"]');
-          if (val) val.textContent = '+' + money(g.perSecond, 4) + '/sec';
-          var head = document.querySelector('.loan-row-head[data-group="' + g.name + '"]');
-          if (head) {
-            head.querySelector('[data-role="row-total"]').textContent = money(g.principalLeft + g.interestDue);
-            head.querySelector('[data-role="row-sub"]').textContent = g.rate > 0
-              ? 'principal ' + money(g.principalLeft) + ' + byaaj ' + money(g.interestDue)
-              : 'kul liya ' + money(g.principalOrig);
-            var live = head.querySelector('[data-role="row-live"]');
-            if (live) live.textContent = 'Live +' + money(g.perSecond, 4) + '/sec badh raha hai';
-          }
-          g.tranches.forEach(function (loan) { refreshTranche(loan, calcs[loan.id]); });
-        });
-      }
-
-      /* ---------- Render all (data badalne par) ---------- */
-      function renderAll() {
-        var calcs = {};
-        loans.forEach(function (loan) { calcs[loan.id] = calcLoan(loan, new Date()); });
-        var groups = loanGroups(calcs);
-        renderPerLoan(groups);
-        renderCalendar();
-        renderTicks();
-        renderMonthly();
-        renderLoans(calcs);
-        updateLive();
-      }
-
-      /* ---------- Calendar nav ---------- */
-      $('calPrev').addEventListener('click', function () {
-        calCursor.m -= 1;
-        if (calCursor.m < 0) { calCursor.m = 11; calCursor.y -= 1; }
-        renderCalendar();
-      });
-      $('calNext').addEventListener('click', function () {
-        calCursor.m += 1;
-        if (calCursor.m > 11) { calCursor.m = 0; calCursor.y += 1; }
-        renderCalendar();
       });
 
-      /* ---------- Add loan ---------- */
-      $('fDate').value = todayStr();
-      $('toggleLoanForm').addEventListener('click', function () {
-        var f = $('loanForm');
-        f.hidden = !f.hidden;
-        $('toggleLoanForm').textContent = f.hidden ? '+ Naya karz' : 'Band karein';
-        if (!f.hidden) $('fName').focus();
-      });
-      $('loanForm').addEventListener('submit', function (ev) {
-        ev.preventDefault();
-        var err = $('loanError');
-        err.style.display = 'none';
-        var name = $('fName').value.trim();
-        var amount = parseFloat($('fAmount').value);
-        var rateVal = $('fRate').value;
-        var rate = rateVal === '' ? 0 : parseFloat(rateVal);
-        var date = $('fDate').value;
-        if (!name) { err.textContent = 'Lender ka naam daalein.'; err.style.display = 'block'; return; }
-        if (!amount || amount <= 0) { err.textContent = 'Sahi rakam daalein.'; err.style.display = 'block'; return; }
-        if (isNaN(rate) || rate < 0) { err.textContent = 'Interest rate 0 ya usse zyada hona chahiye.'; err.style.display = 'block'; return; }
-        if (!date) { err.textContent = 'Calendar se karz lene ki date chunein.'; err.style.display = 'block'; return; }
-        loans.push({ id: seq++, name: name, principal: amount, rate: rate, borrowed: date });
-        openGroups[name] = true;
-        $('fName').value = ''; $('fAmount').value = ''; $('fRate').value = '';
-        $('fDate').value = todayStr();
-        $('loanForm').hidden = true;
-        $('toggleLoanForm').textContent = '+ Naya karz';
-        renderAll();
-      });
+      document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeSheet(); });
 
       renderAll();
-      setInterval(updateLive, 1000);
-    }());
-  </script>
-</body>
+    })();
+    </script>
+  </body>
 </html>
