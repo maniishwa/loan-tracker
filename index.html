@@ -331,7 +331,13 @@
         // Shanker ka byaaj ₹15,000 dekar clear kiya tha — 4 Sept 2026.
         { id: 101, loanId: 4, amount: 15000, date: '2026-09-04' },
         // Jagdeva ko ₹3,000 byaaj November 2026 me diya (2 tarikh ko).
-        { id: 102, loanId: 1, amount: 3000, date: '2026-11-02' }
+        { id: 102, loanId: 1, amount: 3000, date: '2026-11-02' },
+        // Shanker — poora total clear, loan band (16 Nov 2026): kul ₹34,500 diye (₹33,500 + ₹1,000). Baki ₹0.
+        { id: 103, loanId: 4, amount: 33500, date: '2026-11-16' },
+        { id: 104, loanId: 4, amount: 1000, date: '2026-11-16' },
+        // Rajia Madam — poora byaaj clear (16 Nov 2026). Rakam tracker ke apne hisaab se:
+        // ₹25,000 @ 5%/mahina, 10 Oct 2025 se 16 Nov 2026 tak ka byaaj = ₹16,509.24. Sirf ₹25,000 principal baki.
+        { id: 105, loanId: 5, amount: 16509.24, date: '2026-11-16' }
       ];
       // EMI wale karz — dono ki kist har mahine ki 2 tarikh ko jati hai.
       // basePaid = ab tak di gayi kistein (emiPayments se gin kar milti hain).
